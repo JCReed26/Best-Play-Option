@@ -1,0 +1,14 @@
+Description of the Application Domain
+  (1) Best-Play-Option is an application that applies NFL player stats to choose the best play against what the other team will most likely be running based on the players they have. The application includes plays for both sides of the ball, offense and defense,
+      and uses player stats going as far back as the 2020-21 NFL season. On the defensive side, the application will take the selected players for each position and predict the offensive side's play to ensure the least amount of yardage possible. On the offensive side,
+      the application will take the selected players for each position and predict the defensive side's play to ensure the most amount of yardage possible. This application can be used for sports betting, learning new plays and their success rate, and learning how to
+      predict the opposing team's play call. To our knowledge, there are no known equivalent websites/applications to be found on the internet (besides maybe student projects like ours that were never made public).
+  (2) Our data will be pulled from NFL player statistics using machine learning and internet browsing. There are numerous sources that have NFL player statistics including receiving and rushing yards, blocks, sacks, interceptions, touchdowns, passing yards, etc.
+
+Description of the Functionality
+  (1) Some queries might include sorting current quarterbacks by highest touchdown-per-attempt ratio, retrieving the top players by their respective positions, best red zone plays, 
+      best plays by team, teams that allow the most yardage per play, and more. There will be numerous tables used, such as the game score, team information (including statistics for each game), player information, player performance each game, 
+      and AI-powered play suggestions. Records will be updated when the 2025-26 NFL season begins, and records will be deleted if a player retires.
+  (2) The most challenging aspect of the application will be predicting the best offensive and defensive play calls, as there are no websites that track how often a player does what type of play. This is where machine learning and individual research will be implemented,
+      as it is crucial to know each player's most successful play in order to properly predict the team's final play choice. Since there are no equivalent websites/applications that are publicly available, it can be assumed that the features of this application don't
+      exist elsewhere.
