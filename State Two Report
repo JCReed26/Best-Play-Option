@@ -5,3 +5,5 @@ Description of the Application Domain
 Description of the Functionality
   (1) Basic Functions: CRUD functionality, SQL queries on single tables, SQL queries on multiple tables, Algebraic Analysis.
   (2) Advanced Functions: Play-Predictor, Game-Predictor, Team-Weak-Strong-Pts, Algebraic Analysis. Other than the algebra functions the other functions will utilize Pytorch to predict what the best course of action is across our datasets and options. The platform will create the ability to output a visually insightful look into the play decisions in a live game that can help the coach visualize the plays better.
+
+![ER-Diagram](**path_to_image**)
