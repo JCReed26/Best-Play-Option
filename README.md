@@ -1,21 +1,31 @@
 # Best-Play-Option
 Best Play Option. 
 
-Using large data sets of NFL play by play stats from every game, and player stats from 2020-2024. 
+Description: 
+Takes football player stats, team game stats, and play-by-play stats. Utilizes ML to analyze the data, give insightful graphs, and help choose the best play option for a specific team's plays and active players to use against their opponents defense
 
-Utilizing ML, SQL queries, Algebraic analysis, Python backend, Frontend framework not yet chosen 
+Utilizing Pytorch, SQL, Algebraic Analysis, Python, React, Tailwind CSS, (not fully decided) React DnD or Framer Motion. 
 
-Output: 
-  Graphs and Tables of each team's and coaches ability to choose the best play
+## Output: 
+### Game Setup & Analysis view
+  Graphs and Tables of each team's and coach's ability to choose the best play
 
-  Most frequent types of defensive plays and the best offensive play choice across whole league 
-  Most frequent types of offensive plays and the best defensive play choice across whole league 
+  Top play for offense and defense and top by division
+  (Note: can change based on Game Setup, team choice, etc)
 
-  (Input: A team whos offense your going up against) - 
-  (Input: A team whos defense your going up against) - 
-    Choose: types of most likely play choices from the opponent are shown 
-    based upon choice, it will take the host team and show the best play choices 
-    that the coach could pick 
-    
- 
+  (Depending on the timeline: interactive play creation, upload your own playbook, practice/game film)
 
+  Game Setup 
+  Input: What is your team - Who are you going up against - Which players are currently active
+
+### Game View
+  As you play the game, it collects live data inputted by the user and adds to analysis for a stronger prediction as the game  
+  progresses
+  uses standard play names unless a playbook is added. If a team wanted to import their plays so they could get better 
+  predictions 
+
+  Frontend design - on notion page
+
+## Goals
+Outputs: Confidence of Prediction, Play_name, Play_type, Def_Weak_Pts, Reasoning, Play Visualizer, Play selector
+Inputs: NFL play-by-play stats, NFL player stats from 2022-2024 seasons, Play Choices, Team Selection, Active Players
