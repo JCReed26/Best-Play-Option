@@ -1,6 +1,11 @@
 # Best-Play-Option
 Best Play Option. 
 
+# Best-Play-Option User View
+    Open Docker Desktop
+    %> docker-compose up
+    %> docker-compose down
+
 Description: 
 Takes football player stats, team game stats, and play-by-play stats. Utilizes ML to analyze the data, give insightful graphs, and help choose the best play option for a specific team's plays and active players to use against their opponents defense
 
