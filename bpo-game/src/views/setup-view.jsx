@@ -2,9 +2,11 @@
 
 import Form from 'next/form';
 import React from 'react';
+import '../styles/setup-view.css';
 
 function SetupView({ onSwitchView }) {
 
+    /* User interactive states */
     const [team, setTeam] = React.useState(); 
 
     function homeTeamHandler(selectedTeam) {
@@ -52,10 +54,33 @@ function SetupView({ onSwitchView }) {
         { value: '32', label: 'Was Commanders'},
     ]
 
+    /* API fetch & Data Connections */
+
+/*
+    // need the active offensive players on team#
+    useEffect(() => {
+        fetch('http://my-api-url/team#')
+            .then(response => response.json)
+            .then(teamData => setTeamData(teamData));
+    }, []);
+
+    // need the active defensive players on team#
+    useEffect(() => {
+        fetch('http://my-api-url/team#')
+            .then(response => response.json)
+            .then(oppsData => setOppsData(oppsData));
+    }, []);
+
+    const [teamData, setTeamData] = React.useState(NULL);
+
+    const [oppsData, setOppsData] = React.useState(NULL); 
+*/
+
+    /* React HTML Page */
     return (
         <div className="setup-main">
-            <h1>setup view</h1>
-            <Form>
+            <h1>Setup View</h1>
+            <Form className='selection-form'>
                 <select onChange={(e) => homeTeamHandler(e.target.value)}>
                     <option>Select Your Team</option>
                     {teamOptions.map((team) => (
@@ -74,6 +99,23 @@ function SetupView({ onSwitchView }) {
                 </select>
                 <button type='button' onClick={onSwitchView}>Start Game Simulation</button>
             </Form>
+            <div className='selections-container'>
+                    <div className='home-team-container'>
+                        <p className="bold-text">
+                            view of selected team with list of active offensive players | 
+                            when API ready add map out of players name, position | 
+                            Team {team}
+                        </p>
+                        
+                    </div>
+                    <div className='def-team-container'>
+                        <p className="bold-text">
+                            view of selected team with list of active defensive players | 
+                            when API ready add map out of players name, position | 
+                            Opps {opps}
+                        </p>
+                    </div>
+            </div>
         </div>
     );
 }
