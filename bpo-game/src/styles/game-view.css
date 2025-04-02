@@ -1,0 +1,92 @@
+.game-view-main {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 95vh; /* Reduced from 100vh to prevent scrolling */
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+.game-view-main h1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 1;
+  margin: 0;
+  padding: 10px 0;
+}
+
+.left-side-container, .center-container, .right-side-container {
+  border: 2px solid #000;
+  height: calc(95vh - 70px); /* Account for header and some padding */
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px; /* To account for the h1 */
+  overflow: hidden; /* Prevent scrolling */
+  gap: 10px; /* Add spacing between child elements */
+}
+
+/* Style for all inner divs to have borders and proper spacing */
+.left-side-container > div,
+.center-container > div,
+.right-side-container > div {
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 10px;
+  box-sizing: border-box;
+  flex: 1; /* Allow each div to take equal space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f8f8;
+  overflow: hidden; /* Prevent scrolling in inner boxes */
+}
+
+/* Specific styles for the inner containers in the left side */
+.def-play-choice {
+  flex: 0.30; /* Each takes 1/4 of the space (1/2 total) */
+  max-height: 30%; /* Ensure it doesn't exceed 25% of container height */
+}
+
+.game-progression-container {
+  flex: 0.70; /* Takes 1/2 of the space */
+  max-height: 70%; /* Ensure it doesn't exceed 50% of container height */
+}
+
+.left-side-container {
+  flex: 1.165;
+}
+
+.center-container {
+  flex: 2.33;
+}
+
+.right-side-container {
+  flex: 0.67;
+}
+
+/* Center container's inner divs */
+.center-container > div:first-child {
+  flex: 0.375; /* 3/8 of the center container */
+}
+
+.center-container > div:last-child {
+  flex: 0.625; /* 5/8 of the center container */
+}
+
+/* Style for the button to be at the top */
+.game-view-main button {
+  position: absolute;
+  top: 10px; /* Position at the top with a small margin */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px; /* Slightly smaller padding to ensure it fits */
+  z-index: 10; /* Ensure it's above other elements */
+}
