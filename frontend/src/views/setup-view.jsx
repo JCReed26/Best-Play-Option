@@ -61,28 +61,45 @@ function SetupView({ onSwitchView }) {
     const [defense, setDefense] = useState(); 
 
     //when we can change to be the team selected 
+    //offense call
     useEffect(() => {
-        setLoading(true);
-        Promise.all([
-            fetch('http://localhost:8000/players'),
-            fetch('http://localhost:8000/players')
-        ])
-        .then(([offenseRes, defenseRes]) => 
-            Promise.all([offenseRes.json(), defenseRes.json()])
-        )
-        .then(([offenseData, defenseData]) => {
-            setOffense(offenseData);
-            setDefense(defenseData);
-            setLoading(false);
-        })
-        .catch(error => {
-            console.error('Failed to fetch players:', error);
-            setLoading(false);
-        });
+        fetch('http://localhost:8000/players')
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setOffense(data);
+            })
+            .catch(error => {
+                console.error('Failed to fetch players:', error);
+            });
     }, []);
 
+    //when we can change to be the team that we called 
+    //Defense call 
+    useEffect(() => {
+        fetch('http://localhost:8000/players')
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setDefense(data);
+            })
+            .catch(error => {
+                console.error('Failed to fetch players:', error);
+            });
+    }, []);
 
-    if (loading) return <div>Loading...</div>;
+    while (loading) {
+        if (defense && offense) setLoading(false);
+        return (<div>Loading...</div>);
+    }
 
     /* React HTML Page */
     return (
