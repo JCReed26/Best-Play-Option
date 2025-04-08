@@ -12,8 +12,15 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Expose port 3000
+# Create necessary directories
+RUN mkdir -p .next/static
+RUN mkdir -p public
+
+# Copy standalone output and static files
+RUN cp -r .next/standalone/* ./
+RUN cp -r .next/static ./.next/
+RUN cp -r public ./
+
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

@@ -10,7 +10,7 @@ export default function HelloWorld() {
 
   useEffect(() => {
     // Fetch hello world message from backend
-    fetch('http://localhost:8000/')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -27,7 +27,7 @@ export default function HelloWorld() {
       });
 
     // Fetch players from backend
-    fetch('http://localhost:8000/players')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/players`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
