@@ -7,8 +7,6 @@
 import React from 'react';
 import GameView from '../views/game-view';
 import SetupView from '../views/setup-view';
-import HelloWorld from '../components/hello_world';
-
 export default function Page() {
   const [viewControl, setViewControl] = React.useState(false);
 
