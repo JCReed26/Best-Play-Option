@@ -1,13 +1,9 @@
-# Use Node.js as the base image
 FROM node:20-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
 # Copy the rest of the application
@@ -16,8 +12,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Expose the port the app runs on
+# Expose port 3000
 EXPOSE 3000
 
-# Command to run the application
+# Start the application
 CMD ["npm", "start"]

@@ -7,10 +7,9 @@
 import React from 'react';
 import GameView from '../views/game-view';
 import SetupView from '../views/setup-view';
-
+import HelloWorld from '../components/hello_world';
 
 export default function Page() {
-
   const [viewControl, setViewControl] = React.useState(false);
 
   function viewHandler() {
@@ -18,12 +17,9 @@ export default function Page() {
   }
 
   return (
-    <html>
-      <body>
-        <div className='app-container'>
-          {viewControl ? <GameView onSwitchView={viewHandler} /> : <SetupView onSwitchView={viewHandler} />}
-        </div>
-      </body>
-    </html>
+    <>
+      {/* Original App Content */}
+      {viewControl ? <GameView onSwitchView={viewHandler} /> : <SetupView onSwitchView={viewHandler} />}
+    </>
   );
 }
