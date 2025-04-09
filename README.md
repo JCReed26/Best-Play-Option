@@ -1,36 +1,45 @@
-# Best-Play-Option
-Best Play Option. 
+# Best-Play-Option AWS Deployment
 
-# Best-Play-Option User View
-    Open Docker Desktop
-    %> docker-compose up
-    %> docker-compose down
+This project is configured for deployment on AWS using EC2, RDS, and SageMaker.
 
-Description: 
-Takes football player stats, team game stats, and play-by-play stats. Utilizes ML to analyze the data, give insightful graphs, and help choose the best play option for a specific team's plays and active players to use against their opponents defense
+## Project Structure
 
-Utilizing Pytorch, SQL, Algebraic Analysis, Python, React, Tailwind CSS, (not fully decided) React DnD or Framer Motion. 
+```
+project-root/
+├── backend/               # FastAPI Python backend
+│   ├── main.py            # Main application file
+│   ├── requirements.txt   # Python dependencies
+│   └── Dockerfile         # Backend Docker configuration
+├── frontend/              # Next.js frontend
+│   ├── public/            # Static assets
+│   ├── src/               # Source code
+│   ├── package.json       # Node.js dependencies
+│   ├── nginx.conf         # Nginx configuration for production
+│   └── Dockerfile         # Frontend Docker configuration
+├── .env.example           # Example environment variables
+└── docker-compose.yml     # Docker Compose configuration
+```
 
-## Output: 
-### Game Setup & Analysis view
-  Graphs and Tables of each team's and coach's ability to choose the best play
+## Local Development
 
-  Top play for offense and defense and top by division
-  (Note: can change based on Game Setup, team choice, etc)
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd Best-Play-Option
+   ```
 
-  (Depending on the timeline: interactive play creation, upload your own playbook, practice/game film)
+2. Create a `.env` file from the example:
+   ```bash
+   cp .env.example .env
+   ```
 
-  Game Setup 
-  Input: What is your team - Who are you going up against - Which players are currently active
+3. Update the `.env` file with your configuration.
 
-### Game View
-  As you play the game, it collects live data inputted by the user and adds to analysis for a stronger prediction as the game  
-  progresses
-  uses standard play names unless a playbook is added. If a team wanted to import their plays so they could get better 
-  predictions 
+4. Start the application using Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
 
-  Frontend design - on notion page
-
-## Goals
-Outputs: Confidence of Prediction, Play_name, Play_type, Def_Weak_Pts, Reasoning, Play Visualizer, Play selector
-Inputs: NFL play-by-play stats, NFL player stats from 2022-2024 seasons, Play Choices, Team Selection, Active Players
+5. Access the application:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000

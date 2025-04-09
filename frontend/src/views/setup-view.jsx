@@ -1,13 +1,14 @@
 'use client'
 
 import Form from 'next/form';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/setup-view.css';
 
 function SetupView({ onSwitchView }) {
 
     /* User interactive states */
-    const [team, setTeam] = React.useState(); 
+    const [team, setTeam] = React.useState();
+    const [loading, setLoading] = useState(true);
 
     function homeTeamHandler(selectedTeam) {
         setTeam(selectedTeam);
@@ -56,25 +57,49 @@ function SetupView({ onSwitchView }) {
 
     /* API fetch & Data Connections */
 
-/*
-    // need the active offensive players on team#
+    const [offense, setOffense] = useState(); 
+    const [defense, setDefense] = useState(); 
+
+    //when we can change to be the team selected 
+    //offense call
     useEffect(() => {
-        fetch('http://my-api-url/team#')
-            .then(response => response.json)
-            .then(teamData => setTeamData(teamData));
+        fetch('http://localhost:8000/players')
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setOffense(data);
+            })
+            .catch(error => {
+                console.error('Failed to fetch players:', error);
+            });
     }, []);
 
-    // need the active defensive players on team#
+    //when we can change to be the team that we called 
+    //Defense call 
     useEffect(() => {
-        fetch('http://my-api-url/team#')
-            .then(response => response.json)
-            .then(oppsData => setOppsData(oppsData));
+        fetch('http://localhost:8000/players')
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setDefense(data);
+            })
+            .catch(error => {
+                console.error('Failed to fetch players:', error);
+            });
     }, []);
 
-    const [teamData, setTeamData] = React.useState(NULL);
-
-    const [oppsData, setOppsData] = React.useState(NULL); 
-*/
+    while (loading) {
+        if (defense && offense) setLoading(false);
+        return (<div>Loading...</div>);
+    }
 
     /* React HTML Page */
     return (
@@ -101,19 +126,33 @@ function SetupView({ onSwitchView }) {
             </Form>
             <div className='selections-container'>
                     <div className='home-team-container'>
-                        <p className="bold-text">
-                            view of selected team with list of active offensive players | 
-                            when API ready add map out of players name, position | 
-                            Team {team}
-                        </p>
-                        
+                        <ul>
+                            <li className="bold-text">
+                                view of selected team with list of active offensive players | 
+                                when API ready add map out of players name, position | 
+                                Team {team}
+                            </li>
+                            {offense.map((off) => (
+                                <li key={off.id}>
+                                {off.name} - {off.position}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                     <div className='def-team-container'>
-                        <p className="bold-text">
-                            view of selected team with list of active defensive players | 
-                            when API ready add map out of players name, position | 
-                            Opps {opps}
-                        </p>
+                        
+                        <ul>
+                            <li className="bold-text">
+                                view of selected team with list of active defensive players | 
+                                when API ready add map out of players name, position | 
+                                Opps {opps}
+                            </li>
+                            {defense.map((def) => (
+                                <li key={def.id}>
+                                {def.name} - {def.position}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
             </div>
         </div>
