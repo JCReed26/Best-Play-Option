@@ -7,9 +7,16 @@ This project is configured for deployment on AWS using EC2, RDS, and SageMaker.
 ```
 project-root/
 ├── backend/               # FastAPI Python backend
-│   ├── main.py            # Main application file
+│   ├── simulation/        # game simulation tracking 
+│   ├── sql/               # queries
+│   ├── main.py            # Main application file and calls 
 │   ├── requirements.txt   # Python dependencies
 │   └── Dockerfile         # Backend Docker configuration
+├── DB/
+│   ├── BPO.sql
+│   ├── app.py
+│   ├── requirements.txt
+│   └── Dockerfile
 ├── frontend/              # Next.js frontend
 │   ├── public/            # Static assets
 │   ├── src/               # Source code
