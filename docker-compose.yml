@@ -1,36 +1,42 @@
+version: '3.8'
+
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
+  database:
+    build: ./DB
+    container_name: bpo_db
     environment:
-      - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://backend:8000
-    depends_on:
-      - backend
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: BPO
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./DB/BPO.sql:/docker-entrypoint-initdb.d/BPO.sql
+    networks:
+      - bpo_network
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
+    container_name: bpo_backend
     ports:
       - "8000:8000"
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}
-      # AWS-related environment variables commented out for local development
-      # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      # - AWS_REGION=${AWS_REGION}
-      # - SAGEMAKER_ENDPOINT=${SAGEMAKER_ENDPOINT}
-    volumes:
-      - ./backend:/app
+    env_file:
+      - ./DB/.env
+    depends_on:
+      - database
+    networks:
+      - bpo_network
+
+  frontend:
+    build: ./frontend
+    container_name: bpo_frontend 
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - bpo_network
+
+networks:
+  bpo_network:
+    driver: bridge

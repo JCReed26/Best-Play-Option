@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:17
+    container_name: bpo_backend_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: BPO
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./BPO.sql:/docker-entrypoint-initdb.d/BPO.sql
+    networks:
+      - bpo_network
+
+  flask_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bpo_backend_app
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - bpo_network
+
+networks:
+  bpo_network:
+    driver: bridge

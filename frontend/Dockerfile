@@ -12,14 +12,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Create necessary directories
-RUN mkdir -p .next/static
-RUN mkdir -p public
-
-# Copy standalone output and static files
+# Copy standalone output
 RUN cp -r .next/standalone/* ./
-RUN cp -r .next/static ./.next/
-RUN cp -r public ./
 
 EXPOSE 3000
 
