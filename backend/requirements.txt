@@ -4,3 +4,8 @@ sqlalchemy
 psycopg2-binary
 boto3
 python-dotenv
+joblib
+torch
+numpy
+pandas
+sklearn
