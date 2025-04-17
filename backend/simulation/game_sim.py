@@ -8,6 +8,8 @@ from ML.inference_main import get_predictions
 class GameSimulation: 
 
     def __init__(self): 
+        self.offense = None
+        self.defense = None
         self.quarters = 4 
         self.quarter_time = 15 * 60 #adjustment for minutes 
         self.current_quarter = 1
@@ -81,6 +83,29 @@ class GameSimulation:
     # Makes call to sagemaker model 
     # @JIMMY - Implement the GET to sagemaker 
     async def get_model_prediction(self): 
+
+        '''
+            option 1 
+                1. frontend sends inital start and intialize of 
+                data and start of game 
+
+                2. frontend sends how much time yards etc 
+                3. do the math to update numbers on this side 
+                4. we parse that data into a proper input 
+                and make the call - this would mean sending 
+                a new gamedata board basically everytime 
+                    which could work while next play loading 
+                    nothing on the screen 
+
+            option 2 
+                1. frontend keeps its own game states 
+                2. it sends the game state back and forth
+                3. we would need to use the input from user_input 
+                to update the game state in the simulation
+                but then also directly pipe that into the prediction 
+            
+        '''
+
         response = get_predictions(self.user_input)
         return response
     
