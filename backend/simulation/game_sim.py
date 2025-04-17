@@ -1,10 +1,15 @@
-import time 
 import asyncio
 from typing import Dict, List, Optional
+import sys
+from pathlib import Path
+sys.path.append(str(Path("backend/simulation/ML")))
+from ML.inference_main import get_predictions 
 
 class GameSimulation: 
 
     def __init__(self): 
+        self.offense = None
+        self.defense = None
         self.quarters = 4 
         self.quarter_time = 15 * 60 #adjustment for minutes 
         self.current_quarter = 1
@@ -28,11 +33,14 @@ class GameSimulation:
     # @JIMMY - implement the retrieval of data 
     async def user_post_play(self):
         self.user_input = None
+
         user_input = await asyncio.to_thread(input, "Enter data or 'stop' to exit: ")
+
         if user_input.lower() == 'stop':
             self.running = False
             print("Stopping simulation...")
             return None
+        
         # Parse the input string into a list by splitting on spaces
         self.user_input = user_input.split()
         print(self.user_input)
@@ -40,6 +48,7 @@ class GameSimulation:
     async def start_quarter(self):
         print(f"Starting Quarter {self.current_quarter}")
         
+        #game/quarter loop
         while self.game_clock > 0 and self.running:
             self.print()
             plays = await self.next_play()
@@ -51,9 +60,9 @@ class GameSimulation:
             if formData is None:
                 break
                 
-            print(f"Received data: {formData}")
-            await self.end_of_play(formData)
-            print(f"plays data: {self.play_data}")
+            # print(f"Received data: {formData}")
+            # await self.end_of_play(formData)
+            # print(f"plays data: {self.play_data}")
             
         if self.current_quarter == 4:
             await self.clean_model()
@@ -73,23 +82,37 @@ class GameSimulation:
     
     # Makes call to sagemaker model 
     # @JIMMY - Implement the GET to sagemaker 
-    async def get_model_prediction(self) -> List[List]: 
-        data = [
-            ["Pass Short", "Pass", 0.85],
-            ["Run Outside", "Run", 0.80],
-            ["Pass Deep", "Pass", 0.78],
-            ["Run Inside", "Run", 0.76],
-            ["Screen Pass", "Pass", 0.74],
-            ["Option Play", "Run", 0.72],
-            ["Play Action", "Pass", 0.70]
-        ]
-        ret_data = list(data)
-        return ret_data
+    async def get_model_prediction(self): 
+
+        '''
+            option 1 
+                1. frontend sends inital start and intialize of 
+                data and start of game 
+
+                2. frontend sends how much time yards etc 
+                3. do the math to update numbers on this side 
+                4. we parse that data into a proper input 
+                and make the call - this would mean sending 
+                a new gamedata board basically everytime 
+                    which could work while next play loading 
+                    nothing on the screen 
+
+            option 2 
+                1. frontend keeps its own game states 
+                2. it sends the game state back and forth
+                3. we would need to use the input from user_input 
+                to update the game state in the simulation
+                but then also directly pipe that into the prediction 
+            
+        '''
+
+        response = get_predictions(self.user_input)
+        return response
     
     # Takes end of play data [secElapsed, S/F, DEF_POS]
-    async def end_of_play(self, formdata): 
-        self.play_data.append(formdata)
-        self.game_clock -= int(formdata[0])
+    # async def end_of_play(self, formdata): 
+    #     self.play_data.append(formdata)
+    #     self.game_clock -= int(formdata[0])
 
     # Adjusts model for better predictions through game play
     # @JIMMY - implement the POST to the model to 'fit'?
@@ -121,6 +144,20 @@ class GameSimulation:
         return None #AFTER THIS - the code ends printing 3 sets of self.print()?
         
 if __name__ == "__main__":
+
+    input_json = {
+        "OffenseTeam": "DET",
+        "DefenseTeam": "GB",
+        "Quarter": 3,
+        "YardLine": 70,
+        "Down": 3, 
+        "ToGo": 4,
+        "Minute": 12,
+        "Second": 7  
+    }
+
+    print("sample input data looks like \n", input_json)
+
     game = GameSimulation()
     # Simplified execution - assuming no errors will occur
     asyncio.run(game.start_quarter())
