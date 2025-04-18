@@ -4,6 +4,9 @@
 // from the page.tsx file 
 // all components are for this view 
 
+import React, { useState, useEffect } from 'react'
+
+
 import '../styles/game-view.css';
 
 import Def_Formation from '../components/def_formation';
@@ -22,16 +25,71 @@ function MyButton({ onSwitchView }) {
     );
 }
 
+// game state class 
+class gState {
+    constructor() {
+        this.offense = "DET";
+        this.defense = "SF";
+        this.quarters = 4; 
+        this.quarter_time = 15 * 60; // user input will be in seconds 
+        this.current_quarter = 1; 
+        this.game_clock = this.quarter_time; // inits to this 
+        this.running = true; 
+        this.user_input = null;
+    }
+}
+
 function GameView({ onSwitchView }) {
+
+    const [gameState, setGameState] = useState(new gState());
+
+    useEffect(() => {
+        fetch('http://localhost:8000/get-game-state')
+            .then(response => {
+                if(!response.ok) {
+                    throw new Error('game-state-response was not ok')
+                }
+                return response.json();
+            })
+            .then(data => {
+                let new_state = new gState(); 
+                new_state.offense = data.offense;
+                new_state.defense = data.defense;
+                new_state.quarters = data.quarters; 
+                new_state.quarter_time = data.quarter_time; 
+                new_state.current_quarter = data.current_quarter; 
+                new_state.game_clock = data.game_clock;
+                new_state.running = data.running; 
+                new_state.user_input = data.user_input;
+                setGameState(new_state); 
+            })
+            .catch(error => {
+                console.error('Failed to fetch game-state: ', error)
+            });
+    }, [])
+
+    const [prediction, setPrediction] = useState(); 
+
 
     return (
         <div className="game-view-main">
+            <div className='top-gState-container'>
+                <div className='score-team-box'>
+
+                </div>
+                <div className='time-box-container'>
+
+                </div>
+                <div className='progression-container'>
+
+                </div>
+            </div>
             <div className='left-side-container'>
                 <div className='def-play-choice'>
                     <Def_Formation />
                 </div>
                 <div className='game-progression-container'>
-                    <Game_Progression />
+                    <Game_Progression gameState={gameState}/>
                 </div>
             </div>
             <div className='center-container'> 
@@ -39,7 +97,7 @@ function GameView({ onSwitchView }) {
                     <Play_Information />
                 </div>
                 <div>
-                    <Play_Preview />
+                    <Play_Preview gameState={gameState}/>
                 </div>
             </div>
             <div className='right-side-container'>
