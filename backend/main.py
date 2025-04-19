@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import json
-from simulation.game2_sim import GameSimulation  # New simulation class
+from simulation.game2_sim import GameSimulation  
 
 import logging 
 logger = logging.getLogger(__name__)
@@ -19,8 +19,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Game instance and stub testing data
 game_instance = None
+
+# TODO: change to be the database info of a team and its players
 PLAYERS_JSON = json.dumps([
     {"id": 1, "name": "Tom Brady", "position": "QB"},
     {"id": 2, "name": "Patrick Mahomes", "position": "QB"},
@@ -33,6 +34,24 @@ async def read_root():
         content={"message": "Hello World from FastAPI!"},
         media_type="application/json"
     )
+
+'''
+    MARAT - TODO:
+
+    this is the player response data it already passing Players
+    JSON above the / route so you just need to change the variable up there
+    IN THEORY 
+
+    when you go to implement the specific team youll need to add the params 
+    do research of sending an ID to the backend and then using it to match 
+    to a value in the database to run a query and return the data 
+
+    research or watch a basic video of how to do it first then plan it out 
+    and make a pipeline of whats sent and why it match 
+        (TRUST putting you on this will make debugging alot easier)
+        tip: if AI wants to change anything other than this call below 
+        it is wrong and doesnt understand the codebase. 
+'''
 
 @router.get("/players")
 async def read_players():

@@ -60,6 +60,21 @@ function SetupView({ onSwitchView }) {
     const [offense, setOffense] = useState(); 
     const [defense, setDefense] = useState(); 
 
+
+    /* MARAT TODO: 
+            Wrap the useEffect to be in functions that have a null value that 
+            can show when no team is selected. when a team is selected send the 
+            id that match the team options above and match to the db 
+            
+            *You are FREE to REORGANIZE the numbers up there to match the db if easier
+            
+            implement when the choice is changed to call that respective function 
+            and update its players output ... well make it look pretty later 
+            
+            */
+
+
+
     //when we can change to be the team selected 
     //offense call
     useEffect(() => {
