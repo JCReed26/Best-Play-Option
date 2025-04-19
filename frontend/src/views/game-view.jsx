@@ -34,6 +34,7 @@ class gState {
         this.quarter_time = 15 * 60; // user input will be in seconds 
         this.current_quarter = 1; 
         this.game_clock = this.quarter_time; // inits to this 
+        this.play_data = [];
         this.running = true; 
         this.user_input = null;
         this.prediction = null;
@@ -42,35 +43,59 @@ class gState {
 
 function GameView({ onSwitchView }) {
 
-
     const [gameState, setGameState] = useState(new gState());
 
     useEffect(() => {
-        fetch('http://localhost:8000/get-predictions')
-            .then(response => {
-                if(!response.ok) {
-                    throw new Error('game-predictions-response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                let new_state = new gState(); 
-                new_state.offense = data.offense;
-                new_state.defense = data.defense;
-                new_state.quarters = data.quarters; 
-                new_state.quarter_time = data.quarter_time; 
-                new_state.current_quarter = data.current_quarter; 
-                new_state.game_clock = data.game_clock;
-                new_state.running = data.running; 
-                new_state.user_input = data.user_input;
-                new_state.prediction = data.prediction;
-                setGameState(new_state); 
-                // we need to add a call to update all the pages 
-            })
-            .catch(error => {
-                console.error('Failed to fetch game-predictions-state: ', error)
-            });
-    }, [])
+        const sendData = async() => {
+            const gameStateToSend = {
+                offense: gameState.offense,
+                defense: gameState.defense,
+                quarters: gameState.quarters,
+                quarter_time: gameState.quarter_time,
+                current_quarter: gameState.current_quarter,
+                game_clock: gameState.game_clock,
+                play_data: gameState.play_data,
+                running: gameState.running, 
+                user_input: gameState.user_input, 
+                prediction: gameState.prediction
+            };
+
+            try {
+                const response = await fetch("http://localhost:8000/get-predictions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: gameStateToSend
+                })
+                .then(response => {
+                    console.log(response);
+                    if(!response.ok) {
+                        throw new Error('game pred call was not ok')
+                    }
+                    return response.json()
+                })
+                .then(data => {
+                    let new_state = new gState(); 
+                    new_state.offense = data.offense;
+                    new_state.defense = data.defense;
+                    new_state.quarters = data.quarters; 
+                    new_state.quarter_time = data.quarter_time; 
+                    new_state.current_quarter = data.current_quarter; 
+                    new_state.game_clock = data.game_clock;
+                    new_state.running = data.running; 
+                    new_state.user_input = data.user_input;
+                    new_state.prediction = data.prediction;
+                    setGameState(new_state); 
+                });
+
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
+        sendData();
+    }, []);
 
     return (
         <div className="game-view-main">

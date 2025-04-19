@@ -49,6 +49,9 @@ class GameSimulation:
         # grabs the data from the newStates user input
         # this input will tell how much
         # time passed, yards gained/lost, success/fail
+        
+        # should set the prediction before sending back
+
         self.print()
         print(input_data)
         pass

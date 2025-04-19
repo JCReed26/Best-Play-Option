@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from simulation.game2_sim import GameSimulation  # New simulation class
 
 app = FastAPI()
+router = APIRouter()
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,14 +35,14 @@ input_json = {
 }
         
 
-@app.get("/")
+@router.get("/")
 async def read_root():
     return JSONResponse(
         content={"message": "Hello World from FastAPI!"},
         media_type="application/json"
     )
 
-@app.get("/players")
+@router.get("/players")
 async def read_players():
     return JSONResponse(
         content=json.loads(PLAYERS_JSON),
@@ -51,36 +52,38 @@ async def read_players():
 from pydantic import BaseModel
 
 class GameInput(BaseModel):
-    OffenseTeam: str
-    DefenseTeam: str 
-    Quarter: int
-    YardLine: int
-    Down: int
-    ToGo: int
-    Minute: int
-    Second: int
+    offense: str = "DET"
+    defense: str = "SF"
+    quarters: int = 4
+    quarter_time: int = 900  # 15*60 seconds
+    current_quarter: int = 1
+    game_clock: int = 900
+    play_data: list = []
+    running: bool = True
+    user_input: dict = None
+    prediction: dict = None
 
-@app.post("/get-predictions")
+@router.post("/get-predictions", response_model=GameInput)
 async def get_predictions(input_data: GameInput):
+    print("get-predictions")
+    print("input data", input_data)
     global game_instance
     try:
         if not game_instance:
+            print("new-game-starting")
             # create game and set offense and defense
             game_instance = GameSimulation()
-            game_instance.offense = input_data.OffenseTeam
-            game_instance.defense = input_data.DefenseTeam
+            game_instance.offense = input_data.offense
+            game_instance.defense = input_data.defense
             
-            prediction = game_instance.get_model_prediction()
-            return JSONResponse(
-                content=prediction,
-                media_type="application/json"
-            )
-
-        response = game_instance.next_iteration_handler(input_data.dict())
-        return JSONResponse(
-            content=response,
-            media_type="application/json"
-        )
+            result = input_data.dict()
+            result["prediction"] = game_instance.get_model_prediction()
+            return result 
+            
+        # just return game state here 
+        print("starting-next-input->prediction")
+        game_instance.next_iteration_handler(input_data.dict())
+        return game_instance
     except Exception as e:
         return JSONResponse(
             status_code=500,
@@ -96,5 +99,6 @@ async def end_game():
     return {"status": "game_ended"}
 
 if __name__ == "__main__":
+    app.include_router(router)
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
