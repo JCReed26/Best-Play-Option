@@ -8,4 +8,4 @@ joblib
 torch
 numpy
 pandas
-sklearn
+scikit-learn
