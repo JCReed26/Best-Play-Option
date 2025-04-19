@@ -104,7 +104,9 @@ def predict(input_data, model, preprocessor, formation_encoder, playtype_encoder
 
 def get_predictions(input_data):
     # Path to the directory containing model artifacts
-    MODEL_DIR = str(Path(__file__).parent.parent.parent / 'model-20250416-233644')
+    MODEL_DIR = os.path.join(os.path.dirname(__file__), 'model-20250416-233644')
+
+    print("Model dir: ", MODEL_DIR)
 
     # Load artifacts and model
     model, preprocessor, formation_enc, playtype_enc, playchoice_enc = load_model_artifacts(MODEL_DIR)
@@ -112,4 +114,5 @@ def get_predictions(input_data):
     # Example input (correct column names and structure)
     # Get prediction using actual input data
     prediction = predict(input_data, model, preprocessor, formation_enc, playtype_enc, playchoice_enc)
-    print(json.dumps(prediction, indent=2))
+    # print("prediction", json.dumps(prediction, indent=2))
+    return prediction

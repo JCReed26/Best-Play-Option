@@ -4,7 +4,7 @@
 // from the page.tsx file 
 // all components are for this view 
 
-import React, { useState, useEffect, useDebugValue } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 
 import '../styles/game-view.css';
@@ -28,12 +28,17 @@ function MyButton({ onSwitchView }) {
 // game state class 
 class gState {
     constructor() {
-        this.offense = "DET";
-        this.defense = "SF";
+        this.OffenseTeam = "DET";
+        this.DefenseTeam = "SF";
         this.quarters = 4; 
         this.quarter_time = 15 * 60; // user input will be in seconds 
-        this.current_quarter = 1; 
         this.game_clock = this.quarter_time; // inits to this 
+        this.Quarter = 1; 
+        this.YardLine = 70; 
+        this.Down = 1;
+        this.ToGo = 10;
+        this.Minute = Math.floor(this.game_clock / 60); 
+        this.Second = this.game_clock % 60;
         this.play_data = [];
         this.running = true; 
         this.user_input = null;
@@ -45,49 +50,65 @@ function GameView({ onSwitchView }) {
 
     const [gameState, setGameState] = useState(new gState());
 
+    const isMounted = useRef(false)
+
     useEffect(() => {
+
+        if (isMounted.current) return 
+        isMounted.current = true
+
         const sendData = async() => {
             const gameStateToSend = {
-                offense: gameState.offense,
-                defense: gameState.defense,
-                quarters: gameState.quarters,
-                quarter_time: gameState.quarter_time,
-                current_quarter: gameState.current_quarter,
-                game_clock: gameState.game_clock,
-                play_data: gameState.play_data,
+                OffenseTeam: gameState.OffenseTeam,
+                DefenseTeam: gameState.DefenseTeam,
+                quarters: Number(gameState.quarters),
+                quarter_time: Number(gameState.quarter_time),
+                game_clock: Number(gameState.game_clock),
+                Quarter: Number(gameState.Quarter),
+                YardLine: Number(gameState.YardLine),
+                Down: Number(gameState.Down),
+                ToGo: Number(gameState.ToGo),
+                Minute: Number(gameState.Minute),
+                Second: Number(gameState.Second),
+                play_data: gameState.play_data || [],
                 running: gameState.running, 
                 user_input: gameState.user_input, 
                 prediction: gameState.prediction
             };
 
             try {
+                console.log("pre-fetch-preds");
                 const response = await fetch("http://localhost:8000/get-predictions", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: gameStateToSend
-                })
-                .then(response => {
-                    console.log(response);
-                    if(!response.ok) {
-                        throw new Error('game pred call was not ok')
-                    }
-                    return response.json()
-                })
-                .then(data => {
-                    let new_state = new gState(); 
-                    new_state.offense = data.offense;
-                    new_state.defense = data.defense;
-                    new_state.quarters = data.quarters; 
-                    new_state.quarter_time = data.quarter_time; 
-                    new_state.current_quarter = data.current_quarter; 
-                    new_state.game_clock = data.game_clock;
-                    new_state.running = data.running; 
-                    new_state.user_input = data.user_input;
-                    new_state.prediction = data.prediction;
-                    setGameState(new_state); 
+                    body: JSON.stringify(gameStateToSend),
                 });
+                
+                if (!response.ok) {
+                    throw new Error('Game prediction was not ok')
+                }
+                    
+                const data = await response.json(); 
+                console.log("Received data:", data); 
+                
+                let new_state = new gState(); 
+                new_state.OffenseTeam = data.OffenseTeam;
+                new_state.DefenseTeam = data.DefenseTeam;
+                new_state.quarters = data.quarters; 
+                new_state.quarter_time = data.quarter_time; 
+                new_state.game_clock = data.game_clock;
+                new_state.Quarter = data.Quarter; 
+                new_state.YardLine = data.YardLine;
+                new_state.Down = data.Down; 
+                new_state.ToGo = data.ToGo;
+                new_state.Minute = data.Minute;
+                new_state.Second = data.Second;
+                new_state.running = data.running; 
+                new_state.user_input = data.user_input;
+                new_state.prediction = data.prediction;
+                setGameState(new_state); 
 
             } catch (error) {
                 console.error("Error:", error);
@@ -112,24 +133,24 @@ function GameView({ onSwitchView }) {
             </div>
             <div className='left-side-container'>
                 <div className='def-play-choice'>
-                    <Def_Formation gameState={Object.values(gameState)}/>
+                    <Def_Formation gameState={gameState}/>
                 </div>
                 <div className='game-progression-container'>
-                    <Game_Progression gameState={Object.values(gameState)}/>
+                    <Game_Progression gameState={gameState}/>
                     <button>GetNextPlayPrediction</button>
                 </div>
             </div>
             <div className='center-container'> 
                 <div>
-                    <Play_Information gameState={Object.values(gameState)}/>
+                    <Play_Information gameState={gameState}/>
                 </div>
                 <div>
-                    <Play_Preview gameState={Object.values(gameState)}/>
+                    <Play_Preview gameState={gameState}/>
                 </div>
             </div>
             <div className='right-side-container'>
                 <div>
-                    <Plays_Window gameState={Object.values(gameState)}/>
+                    <Plays_Window gameState={gameState}/>
                 </div>
             </div>
             <MyButton onSwitchView={onSwitchView} />
