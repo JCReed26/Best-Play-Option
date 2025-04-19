@@ -28,10 +28,14 @@ services:
       - bpo_network
 
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     container_name: bpo_frontend 
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
     depends_on:
       - backend
     networks:

@@ -4,7 +4,7 @@
 // from the page.tsx file 
 // all components are for this view 
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useDebugValue } from 'react'
 
 
 import '../styles/game-view.css';
@@ -36,18 +36,20 @@ class gState {
         this.game_clock = this.quarter_time; // inits to this 
         this.running = true; 
         this.user_input = null;
+        this.prediction = null;
     }
 }
 
 function GameView({ onSwitchView }) {
 
+
     const [gameState, setGameState] = useState(new gState());
 
     useEffect(() => {
-        fetch('http://localhost:8000/get-game-state')
+        fetch('http://localhost:8000/get-predictions')
             .then(response => {
                 if(!response.ok) {
-                    throw new Error('game-state-response was not ok')
+                    throw new Error('game-predictions-response was not ok');
                 }
                 return response.json();
             })
@@ -61,15 +63,14 @@ function GameView({ onSwitchView }) {
                 new_state.game_clock = data.game_clock;
                 new_state.running = data.running; 
                 new_state.user_input = data.user_input;
+                new_state.prediction = data.prediction;
                 setGameState(new_state); 
+                // we need to add a call to update all the pages 
             })
             .catch(error => {
-                console.error('Failed to fetch game-state: ', error)
+                console.error('Failed to fetch game-predictions-state: ', error)
             });
     }, [])
-
-    const [prediction, setPrediction] = useState(); 
-
 
     return (
         <div className="game-view-main">
@@ -86,23 +87,24 @@ function GameView({ onSwitchView }) {
             </div>
             <div className='left-side-container'>
                 <div className='def-play-choice'>
-                    <Def_Formation />
+                    <Def_Formation gameState={Object.values(gameState)}/>
                 </div>
                 <div className='game-progression-container'>
-                    <Game_Progression gameState={gameState}/>
+                    <Game_Progression gameState={Object.values(gameState)}/>
+                    <button>GetNextPlayPrediction</button>
                 </div>
             </div>
             <div className='center-container'> 
                 <div>
-                    <Play_Information />
+                    <Play_Information gameState={Object.values(gameState)}/>
                 </div>
                 <div>
-                    <Play_Preview gameState={gameState}/>
+                    <Play_Preview gameState={Object.values(gameState)}/>
                 </div>
             </div>
             <div className='right-side-container'>
                 <div>
-                    <Plays_Window />
+                    <Plays_Window gameState={Object.values(gameState)}/>
                 </div>
             </div>
             <MyButton onSwitchView={onSwitchView} />

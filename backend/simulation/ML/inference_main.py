@@ -4,6 +4,11 @@ import json
 import joblib
 import pandas as pd
 import torch
+import sys
+from pathlib import Path
+
+# Add parent directory to Python path
+sys.path.append(str(Path(__file__).parent))
 from model import BPO_PlayPredictor
 
 def load_model_artifacts(model_dir):
@@ -99,23 +104,12 @@ def predict(input_data, model, preprocessor, formation_encoder, playtype_encoder
 
 def get_predictions(input_data):
     # Path to the directory containing model artifacts
-    MODEL_DIR = './model-20250416-233644'
+    MODEL_DIR = str(Path(__file__).parent.parent.parent / 'model-20250416-233644')
 
     # Load artifacts and model
     model, preprocessor, formation_enc, playtype_enc, playchoice_enc = load_model_artifacts(MODEL_DIR)
 
     # Example input (correct column names and structure)
-    input_json = {
-        "OffenseTeam": "DET",
-        "DefenseTeam": "GB",
-        "Quarter": 3,
-        "YardLine": 70,
-        "Down": 3, 
-        "ToGo": 4,
-        "Minute": 12,
-        "Second": 7  
-    }
-
-    # Get prediction
-    prediction = predict(input_json, model, preprocessor, formation_enc, playtype_enc, playchoice_enc)
+    # Get prediction using actual input data
+    prediction = predict(input_data, model, preprocessor, formation_enc, playtype_enc, playchoice_enc)
     print(json.dumps(prediction, indent=2))
