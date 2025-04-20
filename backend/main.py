@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import json
+import asyncpg
+from fastapi import Depends, Query, HTTPException
 from simulation.game2_sim import GameSimulation  
 
 import logging 
@@ -21,43 +23,38 @@ app.add_middleware(
 
 game_instance = None
 
-# TODO: change to be the database info of a team and its players
-PLAYERS_JSON = json.dumps([
-    {"id": 1, "name": "Tom Brady", "position": "QB"},
-    {"id": 2, "name": "Patrick Mahomes", "position": "QB"},
-    {"id": 3, "name": "Travis Kelce", "position": "TE"}
-])
+async def get_db():
+    return await asyncpg.connect(
+        user="postgres",
+        password="postgres_password",
+        database="BPO",
+        host="localhost"
+    )
+
+@router.get("/players")
+async def read_players(team_name: str, db=Depends(get_db)):
+    try:
+        query = "SELECT player_name, position FROM quarterbackdata WHERE team_name = $1 UNION SELECT player_name, position FROM rushingreceivingdata WHERE team_name = $1" 
+        rows = await db.fetch(query, team_name)
+
+        if not rows:
+            raise HTTPException(status_code=404, detail="No players found for the specified team")
+        
+        players = [{"name": row["player_name"], "position": row["position"]} for row in rows]
+
+        return JSONResponse(content=players)
+    
+    except Exception as e:
+        logger.error("Error fetching players", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+    finally:
+        await db.close()
 
 @router.get("/")
 async def read_root():
     return JSONResponse(
         content={"message": "Hello World from FastAPI!"},
-        media_type="application/json"
-    )
-
-'''
-    MARAT - TODO:
-
-    this is the player response data it already passing Players
-    JSON above the / route so you just need to change the variable up there
-    IN THEORY 
-
-    when you go to implement the specific team youll need to add the params 
-    do research of sending an ID to the backend and then using it to match 
-    to a value in the database to run a query and return the data 
-
-    research or watch a basic video of how to do it first then plan it out 
-    and make a pipeline of whats sent and why it match 
-        (TRUST putting you on this will make debugging alot easier)
-        tip: if AI wants to change anything other than this call below 
-        it is wrong and doesnt understand the codebase. 
-'''
-
-@router.get("/players")
-async def read_players():
-    print("reading players")
-    return JSONResponse(
-        content=json.loads(PLAYERS_JSON),
         media_type="application/json"
     )
 
