@@ -12,12 +12,14 @@ function SetupView({ onSwitchView }) {
 
     function homeTeamHandler(selectedTeam) {
         setTeam(selectedTeam);
+        if (selectedTeam) fetchOffense(selectedTeam);
     };
 
     const [opps, setOpps] = React.useState();
 
     function oppsHandler(selectedOpps) {
         setOpps(selectedOpps);
+        if (selectedTeam) fetchDefense(selectedTeam);
     }
 
     const teamOptions = [
@@ -60,56 +62,23 @@ function SetupView({ onSwitchView }) {
     const [offense, setOffense] = useState(); 
     const [defense, setDefense] = useState(); 
 
-
-    /* MARAT TODO: 
-            Wrap the useEffect to be in functions that have a null value that 
-            can show when no team is selected. when a team is selected send the 
-            id that match the team options above and match to the db 
-            
-            *You are FREE to REORGANIZE the numbers up there to match the db if easier
-            
-            implement when the choice is changed to call that respective function 
-            and update its players output ... well make it look pretty later 
-            
-            */
-
-
-
     //when we can change to be the team selected 
     //offense call
-    useEffect(() => {
-        fetch('http://localhost:8000/players')
-            .then(response => {
-                if (!response.ok) {
-                throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setOffense(data);
-            })
-            .catch(error => {
-                console.error('Failed to fetch players:', error);
-            });
-    }, []);
+    function fetchOffense(teamId) {
+        fetch(`http://localhost:8000/players/offense/${teamId}`)
+            .then(res => res.json())
+            .then(data => setOffense(data))
+            .catch(err => console.error('Offense fetch error:', err));
+    }
 
     //when we can change to be the team that we called 
     //Defense call 
-    useEffect(() => {
-        fetch('http://localhost:8000/players')
-            .then(response => {
-                if (!response.ok) {
-                throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setDefense(data);
-            })
-            .catch(error => {
-                console.error('Failed to fetch players:', error);
-            });
-    }, []);
+    function fetchDefense(teamId) {
+        fetch(`http://localhost:8000/players/defense/${teamId}`)
+            .then(res => res.json())
+            .then(data => setDefense(data))
+            .catch(err => console.error('Defense fetch error:', err));
+    }
 
     while (loading) {
         if (defense && offense) setLoading(false);
