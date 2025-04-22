@@ -2,6 +2,10 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
+import asyncpg
+from utils.sql_loader import load_sql
+import asyncio
+from db import execute_query
 
 # Load environment variables from .env
 load_dotenv()
@@ -40,6 +44,17 @@ def test_db():
         return f"Connected to DB! Found tables: {tables}"
     except Exception as e:
         return f"❌ DB connection failed: {e}"
+
+# WARNING NOT VIABLE FOR PRODUCTION
+@app.route('/create-user')
+def create_user(username, password, email): 
+    try: 
+        sql_path = 'queries/create-users.sql'
+        result = asyncio.run(execute_query(sql_path, {'user': username }, {'password': password }, {'email': email }, fetch=True))
+        return result
+    except Exception as e:
+        return "DB error: {e}"
+
 
 # ----------------------------
 # App Runner

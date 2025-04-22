@@ -21,6 +21,23 @@ SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
+
+
+--- 
+--- NAME: users; Type: TABLE; Schema: userID, username, password, playdata
+---
+
+CREATE TABLE public.users (
+    userid int,
+    username varchar(30) default not null, 
+    password varchar(30) default not null, 
+    email varchar(30),
+    playdata varchar(10000) ARRAY,
+    primarykey(userid)
+);
+
+ALTER TABLE public.users OWNER TO postgres;
+
 --
 -- Name: quarterbackdata; Type: TABLE; Schema: public; Owner: postgres
 --
