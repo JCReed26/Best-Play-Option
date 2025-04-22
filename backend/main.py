@@ -3,7 +3,10 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import json
-from simulation.game2_sim import GameSimulation  # New simulation class
+import asyncpg
+import os
+from fastapi import Depends, Query, HTTPException
+from simulation.game2_sim import GameSimulation  
 
 import logging 
 logger = logging.getLogger(__name__)
@@ -19,26 +22,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Game instance and stub testing data
 game_instance = None
-PLAYERS_JSON = json.dumps([
-    {"id": 1, "name": "Tom Brady", "position": "QB"},
-    {"id": 2, "name": "Patrick Mahomes", "position": "QB"},
-    {"id": 3, "name": "Travis Kelce", "position": "TE"}
-])
+
+async def get_db():
+    return await asyncpg.connect(
+        user="postgres",
+        password="postgres_password",
+        database="BPO",
+        host="localhost"
+    )
+
+def load_sql_query(filename: str) -> str:
+    filepath = os.path.join(os.path.dirname(__file__), "get_players.sql")
+    with open(filepath, 'r') as f:
+        return f.read()
+
+@router.get("/players")
+async def read_players(team_name: str, db=Depends(get_db)):
+    try:
+        query = load_sql_query() 
+        rows = await db.fetch(query, team_name)
+
+        if not rows:
+            raise HTTPException(status_code=404, detail="No players found for the specified team")
+        
+        players = [{"name": row["player_name"], "position": row["position"]} for row in rows]
+
+        return JSONResponse(content=players)
+    
+    except Exception as e:
+        logger.error("Error fetching players", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+    finally:
+        await db.close()
 
 @router.get("/")
 async def read_root():
     return JSONResponse(
         content={"message": "Hello World from FastAPI!"},
-        media_type="application/json"
-    )
-
-@router.get("/players")
-async def read_players():
-    print("reading players")
-    return JSONResponse(
-        content=json.loads(PLAYERS_JSON),
         media_type="application/json"
     )
 
