@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import asyncpg
+import os
 from fastapi import Depends, Query, HTTPException
 from simulation.game2_sim import GameSimulation  
 
@@ -31,10 +32,15 @@ async def get_db():
         host="localhost"
     )
 
+def load_sql_query(filename: str) -> str:
+    filepath = os.path.join(os.path.dirname(__file__), "get_players.sql")
+    with open(filepath, 'r') as f:
+        return f.read()
+
 @router.get("/players")
 async def read_players(team_name: str, db=Depends(get_db)):
     try:
-        query = "SELECT player_name, position FROM quarterbackdata WHERE team_name = $1 UNION SELECT player_name, position FROM rushingreceivingdata WHERE team_name = $1" 
+        query = load_sql_query() 
         rows = await db.fetch(query, team_name)
 
         if not rows:
