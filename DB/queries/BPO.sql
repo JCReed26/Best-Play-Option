@@ -29,11 +29,11 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.users (
     userid int,
-    username varchar(30) default not null, 
-    password varchar(30) default not null, 
+    username varchar(30) not null, 
+    password varchar(30) not null, 
     email varchar(30),
     playdata varchar(10000) ARRAY,
-    primarykey(userid)
+    primary key (userid)
 );
 
 ALTER TABLE public.users OWNER TO postgres;
