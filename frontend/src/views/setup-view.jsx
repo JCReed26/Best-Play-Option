@@ -55,6 +55,18 @@ function SetupView({ onSwitchView }) {
         { value: '32', label: 'Was Commanders'},
     ]
 
+    const sortOptions = [
+        { value: '1', label: 'Default'},
+        { value: '2', label: 'Position'},
+        { value: '3', label: 'Rating'},
+        { value: '4', label: 'Position + Rating'},
+    ]
+
+    function getTeamLabel(teamValue) {
+        const team = teamOptions.find(option => option.value == teamValue); 
+        return team ? team.label : 'No team selected';
+    }
+
     /* API fetch & Data Connections */
 
     const [offense, setOffense] = useState(); 
@@ -125,6 +137,20 @@ function SetupView({ onSwitchView }) {
                 <button type='button' onClick={onSwitchView}>Start Game Simulation</button>
             </Form>
             <div className='selections-container'>
+                <div className='home-team'>
+                    <div className="home-team-header">
+                        <div className="team-name">{getTeamLabel(team)}</div>
+                        <div className="dropdown-button">
+                            <select>
+                                <option>Select Sort</option>
+                                { sortOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
                     <div className='home-team-container'>
                         <ul>
                             <li className="bold-text">
@@ -139,8 +165,22 @@ function SetupView({ onSwitchView }) {
                             ))}
                         </ul>
                     </div>
+                </div>
+                <div className='def-team'>
+                    <div className="def-team-header">
+                        <div className="opps-name">{getTeamLabel(opps)}</div>
+                            <div className="dropdown-button">
+                                <select>
+                                    <option>Select Sort</option>
+                                    { sortOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                    </div>
                     <div className='def-team-container'>
-                        
                         <ul>
                             <li className="bold-text">
                                 view of selected team with list of active defensive players | 
@@ -154,6 +194,7 @@ function SetupView({ onSwitchView }) {
                             ))}
                         </ul>
                     </div>
+                </div>
             </div>
         </div>
     );
