@@ -1,7 +1,7 @@
 FROM postgres:17
 
 # Copy initialization script
-COPY BPO.sql /docker-entrypoint-initdb.d/
+COPY queries/BPO.sql /docker-entrypoint-initdb.d/
 
 # Copy SSL certificates
 COPY cert.pem /var/lib/postgresql/cert.pem

@@ -2,10 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
-import asyncpg
-from utils.sql_loader import load_sql
 import asyncio
 from db import execute_query
+import jsonify
 
 # Load environment variables from .env
 load_dotenv()
@@ -38,12 +37,13 @@ def test():
 @app.route('/test-db')
 def test_db():
     try:
-        # Run a simple test query
-        result = db.session.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public';")
-        tables = [row[0] for row in result]
-        return f"Connected to DB! Found tables: {tables}"
+        sql_path = 'queries/get_players.sql'
+        result = asyncio.run(execute_query(sql_path))
+        # list of dictionaries
+        tables = [dict(row) for row in result]
+        return jsonify(tables)
     except Exception as e:
-        return f"❌ DB connection failed: {e}"
+        return f"DB connection failed: {e}"
 
 # WARNING NOT VIABLE FOR PRODUCTION
 @app.route('/create-user')
