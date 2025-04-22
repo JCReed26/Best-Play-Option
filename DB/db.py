@@ -1,14 +1,22 @@
+import os
 import asyncpg
-from utils.sql_loader import load_sql
 
-DB_CONFIG = {
-    "username": "your_user",
-    "password": "your_password",
-}
+# Load .env if you're running this outside of Docker
+from dotenv import load_dotenv
+load_dotenv()
 
 def load_sql(path): 
     with open(path, 'r') as file: 
         return file.read()
+
+# Dynamically load DB config from environment
+DB_CONFIG = {
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME"),
+    "host": os.getenv("DB_HOST"),
+    "port": os.getenv("DB_PORT", "5432")
+}
 
 async def execute_query(sql_path, params=None, fetch=False):
     sql = load_sql(sql_path)
