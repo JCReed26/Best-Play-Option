@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./DB/BPO.sql:/docker-entrypoint-initdb.d/queries/BPO.sql
+      - ./DB/queries/BPO.sql:/docker-entrypoint-initdb.d/BPO.sql
     networks:
       - bpo_network
 
