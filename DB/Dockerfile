@@ -1,12 +1,12 @@
-FROM postgres:17
+FROM python:3.11-slim
 
-# Copy initialization script
-COPY queries/BPO.sql /docker-entrypoint-initdb.d/
+WORKDIR /app
 
-# Copy SSL certificates
-COPY cert.pem /var/lib/postgresql/cert.pem
-COPY key.pem /var/lib/postgresql/key.pem
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-# Set permissions for certificates
-RUN chmod 600 /var/lib/postgresql/cert.pem && \
-    chmod 600 /var/lib/postgresql/key.pem
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]

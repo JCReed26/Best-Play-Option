@@ -1,28 +1,12 @@
 services:
-  database:
-    build: ./DB
-    container_name: bpo_db
-    environment:
-      - DB_HOST=bpo-db.cbgimi80q2aa.us-east-1.rds.amazonaws.com
-      - DB_NAME=bpo-db
-      - DB_USER=postgres
-      - DB_PASSWORD=this_is_password
-      - DB_PORT=5432
-    ports:
-      - "5432:5432"
-    networks:
-      - bpo_network
     
   backend:
     build: ./backend
     container_name: bpo_backend
     ports:
-      - "5050:5000"
+      - "8000:8000"
     env_file:
       - ./DB/.env
-    depends_on:
-      - database
-    command: python app.py
     networks:
       - bpo_network
 
@@ -39,8 +23,6 @@ services:
       - backend
     networks:
       - bpo_network
-    environment:
-      - NEXT_PUBLIC_API_URL=http://backend:5000
 
 networks:
   bpo_network:

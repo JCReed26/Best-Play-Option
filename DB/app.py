@@ -2,9 +2,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
-import asyncio
-from db import execute_query
-import jsonify
 
 # Load environment variables from .env
 load_dotenv()
@@ -28,11 +25,14 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def home():
-    return "✅ Backend is connected and running!"
+    return "database connected and running"
 
 @app.route('/test')
 def test():
     return "Flask is running and reachable!"
+
+
+'''
 
 @app.route('/test-db')
 def test_db():
@@ -55,10 +55,11 @@ def create_user(username, password, email):
     except Exception as e:
         return "DB error: {e}"
 
+'''
 
 # ----------------------------
 # App Runner
 # ----------------------------
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)
