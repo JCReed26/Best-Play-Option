@@ -10,7 +10,7 @@ INSERT_USER_RET_ID = (
     "INSERT INTO users (name) VALUES (%s) RETURNING id;"
 )
 
-# 
+# TODO match names to team name in the database 
 team_options = [
     { "id": "1", "name": "Bal Ravens" },
     { "id": "2", "name": "Buff Bills" },
@@ -145,10 +145,7 @@ def join_tables():
     except Exception as e: 
         return {"Error": str(e)}, 400
 
-# gets and returns the players of the team 
-# TODO: marat find some way to make it so this teamid that is passed in 
-# actually connects to the query properly 
-# function is called getTeamName its up round line 14
+# TODO match all functions above to aggregate to be the post request with this style 
 @app.post("/api/search-print")
 def search_print():
     data = request.get_json()
