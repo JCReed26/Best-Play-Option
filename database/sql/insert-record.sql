@@ -1,2 +1,5 @@
-INSERT INTO users (username, password, email, name, team)
-VALUES (:username, :password, :email, :name, :team);
+-- Sort players by rank
+SELECT rank, player_name FROM quarterbackdata
+UNION
+SELECT rank, player_name FROM rushingreceivingdata
+ORDER BY rank;

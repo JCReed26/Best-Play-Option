@@ -1,3 +1,5 @@
-SELECT q.player_name, r.rushing_yards 
-FROM quarterbackdata q
-JOIN rushingreceivingdata r ON q.team_name = r.team_name;
+-- Sort players by position
+SELECT position, player_name FROM quarterbackdata 
+UNION 
+SELECT position, player_name FROM rushingreceivingdata
+GROUP BY position;
