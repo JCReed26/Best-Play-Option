@@ -1,4 +1,4 @@
--- This SQL query retrieves the average rushing yards for each team from the rushingreceivingdata table.
-SELECT team_name, AVG(rushing_yards) as avg_rush 
-FROM rushingreceivingdata 
+SELECT team_name, AVG(average_rushing_yards_per_attempt::FLOAT) AS avg_rush
+FROM rushingreceivingdata
+WHERE team_name = :team_name
 GROUP BY team_name;
