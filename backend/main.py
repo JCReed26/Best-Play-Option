@@ -2,11 +2,8 @@ from fastapi import FastAPI, APIRouter
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
-import json
-import asyncpg
-import os
-from fastapi import Depends, Query, HTTPException
 from simulation.game2_sim import GameSimulation  
+import httpx
 
 import logging 
 logger = logging.getLogger(__name__)
@@ -22,41 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-game_instance = None
-
-async def get_db():
-    return await asyncpg.connect(
-        user="postgres",
-        password="postgres_password",
-        database="BPO",
-        host="localhost"
-    )
-
-def load_sql_query(filename: str) -> str:
-    filepath = os.path.join(os.path.dirname(__file__), "get_players.sql")
-    with open(filepath, 'r') as f:
-        return f.read()
-
-@router.get("/players")
-async def read_players(team_name: str, db=Depends(get_db)):
-    try:
-        query = load_sql_query() 
-        rows = await db.fetch(query, team_name)
-
-        if not rows:
-            raise HTTPException(status_code=404, detail="No players found for the specified team")
-        
-        players = [{"name": row["player_name"], "position": row["position"]} for row in rows]
-
-        return JSONResponse(content=players)
-    
-    except Exception as e:
-        logger.error("Error fetching players", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-    
-    finally:
-        await db.close()
-
+# to the front 
 @router.get("/")
 async def read_root():
     return JSONResponse(
@@ -64,8 +27,59 @@ async def read_root():
         media_type="application/json"
     )
 
+# some reason this return 
+@router.get("/test-db")
+async def test_the_db():
+    data = await db_test_db()
+    return JSONResponse(
+        content=data,
+        media_type="application/json"
+    )
+
+@router.get("/all-users")
+async def get_all_users(): 
+    data = await db_all_users()
+    return JSONResponse(
+        content=data,
+        media_type="application/json"
+    )
+
+
+# to the database 
+db_url = "http://database:5000/"  # Use Docker service name
+
+async def db_test_db(): 
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+
+async def db_all_users(): 
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/all-users"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+
+
+
+# specifically Game-View (this works)
+
 from pydantic import BaseModel, Field
 from typing import Optional, List
+
+game_instance = None
 
 class GameInput(BaseModel):
     OffenseTeam: str = "DET" 

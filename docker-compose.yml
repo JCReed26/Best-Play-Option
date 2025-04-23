@@ -1,29 +1,25 @@
-version: '3.8'
-
 services:
+    
   database:
-    build: ./DB
-    container_name: bpo_db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_password
-      POSTGRES_DB: BPO
+    build: ./database
+    container_name: bpo_database
     ports:
-      - "5432:5432"
-    volumes:
-      - ./DB/BPO.sql:/docker-entrypoint-initdb.d/BPO.sql
+      - "5000:5000"
+    env_file:
+      - database/.env
     networks:
       - bpo_network
+
 
   backend:
     build: ./backend
     container_name: bpo_backend
     ports:
       - "8000:8000"
-    env_file:
-      - ./DB/.env
     depends_on:
       - database
+    environment:
+      - DATABASE_URL=http://database:5000
     networks:
       - bpo_network
 
