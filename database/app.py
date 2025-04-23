@@ -10,6 +10,49 @@ INSERT_USER_RET_ID = (
     "INSERT INTO users (name) VALUES (%s) RETURNING id;"
 )
 
+# 
+team_options = [
+    { "id": "1", "name": "Bal Ravens" },
+    { "id": "2", "name": "Buff Bills" },
+    { "id": "3", "name": "Cin Bengals" },
+    { "id": "4", "name": "Cle Browns" },
+    { "id": "5", "name": "Den Broncos" },
+    { "id": "6", "name": "Hou Texans" },
+    { "id": "7", "name": "Ind Colts" },
+    { "id": "8", "name": "Jax Jaguars" },
+    { "id": "9", "name": "KC Chiefs" },
+    { "id": "10", "name": "LV Raiders" },
+    { "id": "11", "name": "LA Chargers" },
+    { "id": "12", "name": "Mia Dolphins" },
+    { "id": "13", "name": "NE Patriots" },
+    { "id": "14", "name": "NY Jets" },
+    { "id": "15", "name": "Pitt Steelers" },
+    { "id": "16", "name": "Ten Titans" },
+    { "id": "17", "name": "Ari Cardinals" },
+    { "id": "18", "name": "Atl Falcons" },
+    { "id": "19", "name": "Car Panthers" },
+    { "id": "20", "name": "Chi Bears" },
+    { "id": "21", "name": "Dal Cowboys" },
+    { "id": "22", "name": "Det Lions" },
+    { "id": "23", "name": "GB Packers" },
+    { "id": "24", "name": "LA Rams" },
+    { "id": "25", "name": "Min Vikings" },
+    { "id": "26", "name": "NO Saints" },
+    { "id": "27", "name": "NY Giants" },
+    { "id": "28", "name": "Phi Eagles" },
+    { "id": "29", "name": "SF 49ers" },
+    { "id": "30", "name": "Stl Seahawks" },
+    { "id": "31", "name": "TB Bucks" },
+    { "id": "32", "name": "Was Commanders" },
+]
+
+def getTeamName(teamid): 
+    for option in team_options:
+        if option["id"] == str(teamid):
+            return option["name"]
+    return ""
+
+
 def open_sql_file(filename): 
     try:
         with open(filename, 'r') as f: 
@@ -19,10 +62,13 @@ def open_sql_file(filename):
         return e
 
 
+
+# api stuff 
 load_dotenv()
 
 app = Flask(__name__)
 url = os.getenv("DB_URL")
+print(url)
 connection = psycopg2.connect(url)
 
 @app.get("/")
@@ -98,15 +144,33 @@ def join_tables():
                 return [{"id": d[0], "name": d[1], "count": d[2]} for d in data]
     except Exception as e: 
         return {"Error": str(e)}, 400
-    
-@app.get("/api/search-print")
+
+# gets and returns the players of the team 
+# TODO: marat find some way to make it so this teamid that is passed in 
+# actually connects to the query properly 
+# function is called getTeamName its up round line 14
+@app.post("/api/search-print")
 def search_print():
+    data = request.get_json()
+    teamid = data.get("teamid")
+    
+    if not teamid:
+        return {"error": "Missing team ID in request body"}, 400
+        
+    team_name = getTeamName(teamid)
+    if not team_name:
+        return {"error": "Invalid team ID"}, 404
+        
     try: 
         with connection: 
             with connection.cursor() as cursor: 
-                cursor.execute(open_sql_file('sql/search-print.sql'))
-                data = cursor.fetchall()
-                return [{"id": d[0], "name": d[1], "count": d[2]} for d in data]
+                query = open_sql_file('sql/search-print.sql')
+                cursor.execute(query, (team_name, team_name))
+                players = cursor.fetchall()
+                return {
+                    "team": team_name,
+                    "players": [{"player": p[1], "position": p[2], "rating": p[3]} for p in players]
+                }
     except Exception as e: 
         return {"Error": str(e)}, 400
 

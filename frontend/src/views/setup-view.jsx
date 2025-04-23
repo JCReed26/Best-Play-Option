@@ -94,8 +94,10 @@ function SetupView({ onSwitchView }) {
     const [defense, setDefense] = useState([]); 
 
     useEffect(() => {
-        //if (team) fetchOffense(team);
-        if (team) setOffense(teamOptions)
+        if (team) {
+            console.log("sending team ", team);
+            fetchOffense(team);
+        }
     }, [team]);
 
     useEffect(() => {
@@ -104,17 +106,32 @@ function SetupView({ onSwitchView }) {
 
     //when we can change to be the team selected 
     //offense call
-    function fetchOffense(teamId) {
-        fetch(`http://localhost:8000/players/offense/${teamId}`)
-            .then(res => res.json())
-            .then(data => setOffense(data))
+    function fetchOffense(team) {
+        fetch(`http://localhost:8000/search-print`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                if (!Array.isArray(data)) {
+                    console.error('Invalid offense data format:', data);
+                    return [];
+                }
+                setOffense(data);
+            })
             .catch(err => console.error('Offense fetch error:', err));
     }
 
     //when we can change to be the team that we called 
     //Defense call 
     function fetchDefense(teamId) {
-        fetch(`http://localhost:8000/players/defense/${teamId}`)
+        fetch(`http://localhost:8000/search-print/${teamId}`)
             .then(res => res.json())
             .then(data => setDefense(data))
             .catch(err => console.error('Defense fetch error:', err));
@@ -166,11 +183,17 @@ function SetupView({ onSwitchView }) {
                                 when API ready add map out of players name, position | 
                                 Team {team}
                             </li>
-                            {offense.map((off) => (
-                                <li key={off.value}>
-                                {off.label}
+                            {offense?.players?.length > 0 ? (
+                                offense.players.map((player, index) => (
+                                    <li key={index}>
+                                        {player.player} - {player.position} ({player.rating})
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="error-message">
+                                    No offensive players found - please check team selection
                                 </li>
-                            ))}
+                            )}
                         </ul>
                     </div>
                 </div>

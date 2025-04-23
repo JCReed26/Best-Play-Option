@@ -76,9 +76,17 @@ async def join_tables():
         media_type="application/json"
     )
 
-@router.get("/search-print")
-async def search_print():   
-    data = await db_search_print()
+@router.post("/search-print")
+async def search_print_post(request: dict):
+    teamid = request.get("teamid")
+    if not teamid:
+        return JSONResponse(
+            content={"error": "Missing teamid in request body"},
+            status_code=400,
+            media_type="application/json"
+        )
+    
+    data = await db_search_print(teamid)
     return JSONResponse(
         content=data,
         media_type="application/json"
@@ -161,12 +169,16 @@ async def db_join_tables():
     except Exception as e:
         return {"error": str(e)}
     
-async def db_search_print():   
+async def db_search_print(teamid):   
     try:
         async with httpx.AsyncClient() as client:
             url = f"{db_url}/api/search-print"
             print("database-url: ", url)
-            response = await client.get(url)
+            response = await client.post(
+                url,
+                json={"teamid": teamid},
+                headers={"Content-Type": "application/json"}
+            )
             print("database-return: ", response.json())
             return response.json()
     except Exception as e:
