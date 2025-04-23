@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# to the front 
+# from the front 
 @router.get("/")
 async def read_root():
     return JSONResponse(
@@ -44,6 +44,53 @@ async def get_all_users():
         media_type="application/json"
     )
 
+@router.get("/aggregate")
+async def get_aggregate():
+    data = await db_aggregate()
+    return JSONResponse(
+        content=data,
+        media_type="application/json"
+    )
+
+@router.get("/delete-record")
+async def delete_record(): 
+    data = await db_delete_record()
+    return JSONResponse(
+        content=data,
+        media_type="application/json"
+    )
+
+@router.get("/insert-record")
+async def insert_record():
+    data = await db_insert_record()
+    return JSONResponse(
+        content=data,
+        media_type="application/json"
+    )
+
+@router.get("/join-tables")
+async def join_tables(): 
+    data = await db_join_tables()
+    return JSONResponse(
+        content=data,
+        media_type="application/json"
+    )
+
+@router.get("/search-print")
+async def search_print():   
+    data = await db_search_print()
+    return JSONResponse(
+        content=data,
+        media_type="application/json"
+    )
+
+@router.get("/update-record")
+async def update_record():
+    data = await db_update_record()
+    return JSONResponse(
+        content=data,
+        media_type="application/json"
+    )
 
 # to the database 
 db_url = "http://database:5000/"  # Use Docker service name
@@ -70,7 +117,71 @@ async def db_all_users():
     except Exception as e:
         return {"error": str(e)}
 
-
+async def db_aggregate():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/aggregate"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_delete_record():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/delete-record"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_insert_record():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/insert-record"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_join_tables():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/join-tables"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_search_print():   
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/search-print"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_update_record():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/update-record"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
 
 
 

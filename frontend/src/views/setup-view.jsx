@@ -7,19 +7,15 @@ import '../styles/setup-view.css';
 function SetupView({ onSwitchView }) {
 
     /* User interactive states */
-    const [team, setTeam] = React.useState();
-    const [loading, setLoading] = useState(true);
+    const [team, setTeam] = React.useState('');
+    const [opps, setOpps] = React.useState('');
 
-    function homeTeamHandler(selectedTeam) {
-        setTeam(selectedTeam);
-        if (selectedTeam) fetchOffense(selectedTeam);
-    };
+    function homeTeamHandler(e) {
+        setTeam(e.target.value);
+    }
 
-    const [opps, setOpps] = React.useState();
-
-    function oppsHandler(selectedOpps) {
-        setOpps(selectedOpps);
-        if (selectedTeam) fetchDefense(selectedTeam);
+    function oppsHandler(e) {
+        setOpps(e.target.value);
     }
 
     const teamOptions = [
@@ -69,10 +65,42 @@ function SetupView({ onSwitchView }) {
         return team ? team.label : 'No team selected';
     }
 
+    const [defOption, setDefOption] = useState();
+    const [teamOption, setTeamOption] = useState(); 
+
+
+    function teamOptionsHandler(e) {
+        setTeamOption(e.target.value);
+        //useEffect(() => {
+        //    if (selectedOption) {
+        //        // fetch the sort option 
+        //    }
+        //})
+    }
+
+    function defOptionsHandler(e) {
+        setDefOption(e.target.value);
+        //useEffect(() => {
+        //    if (selectedOption) {
+        //        // fetch sort option
+        //    }
+        //})
+    }
+
+
     /* API fetch & Data Connections */
 
-    const [offense, setOffense] = useState(); 
-    const [defense, setDefense] = useState(); 
+    const [offense, setOffense] = useState([]); 
+    const [defense, setDefense] = useState([]); 
+
+    useEffect(() => {
+        //if (team) fetchOffense(team);
+        if (team) setOffense(teamOptions)
+    }, [team]);
+
+    useEffect(() => {
+        if (opps) setDefense(sortOptions);
+    }, [opps]);
 
     //when we can change to be the team selected 
     //offense call
@@ -92,26 +120,21 @@ function SetupView({ onSwitchView }) {
             .catch(err => console.error('Defense fetch error:', err));
     }
 
-    while (loading) {
-        if (defense && offense) setLoading(false);
-        return (<div>Loading...</div>);
-    }
-
     /* React HTML Page */
     return (
         <div className="setup-main">
             <h1>Setup View</h1>
             <Form className='selection-form'>
-                <select onChange={(e) => homeTeamHandler(e.target.value)}>
-                    <option>Select Your Team</option>
+                <select value={team} onChange={homeTeamHandler}>
+                    <option value="">Select Your Team</option>
                     {teamOptions.map((team) => (
                         <option key={team.value} value={team.value}>
                             {team.label}
                         </option>
                     ))}
                 </select>
-                <select onChange={(e) => oppsHandler(e.target.value)}>
-                    <option>Select Defense To Face</option>
+                <select value={opps} onChange={oppsHandler}>
+                    <option value="">Select Defense To Face</option>
                     {teamOptions.map((team) => (
                         <option key={team.value} value={team.value}>
                             {team.label}
@@ -125,9 +148,10 @@ function SetupView({ onSwitchView }) {
                     <div className="home-team-header">
                         <div className="team-name">{getTeamLabel(team)}</div>
                         <div className="dropdown-button">
-                            <select>
-                                <option>Select Sort</option>
-                                { sortOptions.map((option) => (
+                            <p>selected {teamOption}</p>
+                            <select value={teamOption} onChange={teamOptionsHandler}>
+                                <option value="">Select Sort</option>
+                                {sortOptions.map((option) => (
                                     <option key={option.value} value={option.value}>
                                         {option.label}
                                     </option>
@@ -143,8 +167,8 @@ function SetupView({ onSwitchView }) {
                                 Team {team}
                             </li>
                             {offense.map((off) => (
-                                <li key={off.id}>
-                                {off.name} - {off.position}
+                                <li key={off.value}>
+                                {off.label}
                                 </li>
                             ))}
                         </ul>
@@ -154,9 +178,10 @@ function SetupView({ onSwitchView }) {
                     <div className="def-team-header">
                         <div className="opps-name">{getTeamLabel(opps)}</div>
                             <div className="dropdown-button">
-                                <select>
-                                    <option>Select Sort</option>
-                                    { sortOptions.map((option) => (
+                                <p>selected {defOption}</p>
+                                <select value={defOption} onChange={defOptionsHandler}>
+                                    <option value="">Select Sort</option>
+                                    {sortOptions.map((option) => (
                                         <option key={option.value} value={option.value}>
                                             {option.label}
                                         </option>
@@ -172,8 +197,8 @@ function SetupView({ onSwitchView }) {
                                 Opps {opps}
                             </li>
                             {defense.map((def) => (
-                                <li key={def.id}>
-                                {def.name} - {def.position}
+                                <li key={def.value}>
+                                {def.label}
                                 </li>
                             ))}
                         </ul>
