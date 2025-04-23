@@ -65,26 +65,59 @@ function SetupView({ onSwitchView }) {
         return team ? team.label : 'No team selected';
     }
 
-    const [defOption, setDefOption] = useState();
-    const [teamOption, setTeamOption] = useState(); 
+    const [defOption, setDefOption] = useState('1');
+    const [teamOption, setTeamOption] = useState('1'); 
 
 
-    function teamOptionsHandler(e) {
-        setTeamOption(e.target.value);
-        //useEffect(() => {
-        //    if (selectedOption) {
-        //        // fetch the sort option 
-        //    }
-        //})
+    function teamOptionsHandler(choice) {
+        const selectedValue = choice.target.value;
+        console.log("team sort change to: ", selectedValue);
+        setTeamOption(selectedValue);
+        
+        // Handle the fetch logic directly in the handler
+        switch (selectedValue) {
+            case '1': 
+                console.log("fetching sort 1");
+                fetchOffense(team);
+                break;
+            case '2': 
+                console.log("fetching sort 2");
+                fetchOffense_POS(team);
+                break;
+            case '3': 
+                console.log("fetching sort 3");
+                fetchOffense_RAT(team);
+                break; 
+            case '4': 
+                console.log("fetching sort 4");
+                fetchOffense_PR(team);
+                break; 
+        }
     }
 
     function defOptionsHandler(e) {
-        setDefOption(e.target.value);
-        //useEffect(() => {
-        //    if (selectedOption) {
-        //        // fetch sort option
-        //    }
-        //})
+        const selectedValue = e.target.value;
+        console.log("defense sort change to: ", selectedValue);
+        setDefOption(selectedValue);
+        
+        switch (selectedValue) {
+            case '1': 
+                console.log("fetching defense sort 1");
+                fetchDefense(team);
+                break;
+            case '2': 
+                console.log("fetching defense sort 2");
+                fetchDefense_POS(team);
+                break;
+            case '3': 
+                console.log("fetching defense sort 3");
+                fetchDefense_RAT(team);
+                break; 
+            case '4': 
+                console.log("fetching defense sort 4");
+                fetchDefense_PR(team);
+                break; 
+        }
     }
 
 
@@ -94,31 +127,223 @@ function SetupView({ onSwitchView }) {
     const [defense, setDefense] = useState([]); 
 
     useEffect(() => {
-        //if (team) fetchOffense(team);
-        if (team) setOffense(teamOptions)
+        if (team) {
+            console.log("sending team ", team);
+            fetchOffense(team);
+            setTeamOption('1')
+        }
     }, [team]);
 
     useEffect(() => {
-        if (opps) setDefense(sortOptions);
+        if (opps) {
+            console.log("sending opps ", opps)
+            fetchDefense(opps);  
+            setDefOption('1')
+        } 
     }, [opps]);
 
     //when we can change to be the team selected 
-    //offense call
-    function fetchOffense(teamId) {
-        fetch(`http://localhost:8000/players/offense/${teamId}`)
-            .then(res => res.json())
-            .then(data => setOffense(data))
-            .catch(err => console.error('Offense fetch error:', err));
+    //offense calls
+
+    //default
+    function fetchOffense(team) {
+        fetch(`http://localhost:8000/search-print`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                if (!data || !data.players) {
+                    console.error('Invalid offense data format:', data);
+                    return;
+                }
+                setOffense(data);
+                console.log("recieved team data: ", data);
+            })
+        .catch(err => console.error('Offense fetch error:', err));
     }
+
+    //position *******change endpoint
+    function fetchOffense_POS(team) {
+        fetch(`http://localhost:8000/players-by-pos`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                if (!data || !data.players) {
+                    console.error('Invalid offense data format:', data);
+                    return;
+                }
+                setOffense(data);
+                console.log("recieved team data: ", data);
+            })
+        .catch(err => console.error('Offense fetch error:', err));
+    }
+
+    //rating *****change endpoint 
+    function fetchOffense_RAT(team) {
+        fetch(`http://localhost:8000/search-print`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                if (!data || !data.players) {
+                    console.error('Invalid offense data format:', data);
+                    return;
+                }
+                setOffense(data);
+                console.log("recieved team data: ", data);
+            })
+        .catch(err => console.error('Offense fetch error:', err));
+    }
+
+    //pos+rat ****change endpoint
+    function fetchOffense_PR(team) {
+        fetch(`http://localhost:8000/search-print`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                if (!data || !data.players) {
+                    console.error('Invalid offense data format:', data);
+                    return;
+                }
+                setOffense(data);
+                console.log("recieved team data: ", data);
+            })
+        .catch(err => console.error('Offense fetch error:', err));
+    }
+
 
     //when we can change to be the team that we called 
     //Defense call 
-    function fetchDefense(teamId) {
-        fetch(`http://localhost:8000/players/defense/${teamId}`)
-            .then(res => res.json())
-            .then(data => setDefense(data))
-            .catch(err => console.error('Defense fetch error:', err));
+
+    //default 
+    function fetchDefense(team) {
+        fetch(`http://localhost:8000/search-print`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data || !data.players) {
+                console.error('Invalid defense data format:', data);
+                return;
+            }
+            setDefense(data);
+            console.log("recieved opps data: ", data);
+        })
+        .catch(err => console.error('Defense fetch error:', err));
     }
+
+    //position *****change endpoint
+    function fetchDefense_POS(team) {
+        fetch(`http://localhost:8000/player-by-pos`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data || !data.players) {
+                console.error('Invalid defense data format:', data);
+                return;
+            }
+            setDefense(data);
+            console.log("recieved opps data: ", data);
+        })
+        .catch(err => console.error('Defense fetch error:', err));
+    }
+
+    //rating ******change endpoint 
+    function fetchDefense_RAT(team) {
+        fetch(`http://localhost:8000/players-by-rat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data || !data.players) {
+                console.error('Invalid defense data format:', data);
+                return;
+            }
+            setDefense(data);
+            console.log("recieved opps data: ", data);
+        })
+        .catch(err => console.error('Defense fetch error:', err));
+    }
+
+    //pos+rat *****change endpoint 
+    function fetchDefense_PR(team) {
+        fetch(`http://localhost:8000/search-print`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ teamid: team })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            if (!data || !data.players) {
+                console.error('Invalid defense data format:', data);
+                return;
+            }
+            setDefense(data);
+            console.log("recieved opps data: ", data);
+        })
+        .catch(err => console.error('Defense fetch error:', err));
+    }
+
+
+
+
 
     /* React HTML Page */
     return (
@@ -148,9 +373,7 @@ function SetupView({ onSwitchView }) {
                     <div className="home-team-header">
                         <div className="team-name">{getTeamLabel(team)}</div>
                         <div className="dropdown-button">
-                            <p>selected {teamOption}</p>
                             <select value={teamOption} onChange={teamOptionsHandler}>
-                                <option value="">Select Sort</option>
                                 {sortOptions.map((option) => (
                                     <option key={option.value} value={option.value}>
                                         {option.label}
@@ -162,15 +385,19 @@ function SetupView({ onSwitchView }) {
                     <div className='home-team-container'>
                         <ul>
                             <li className="bold-text">
-                                view of selected team with list of active offensive players | 
-                                when API ready add map out of players name, position | 
-                                Team {team}
+                                {team} | {teamOption}
                             </li>
-                            {offense.map((off) => (
-                                <li key={off.value}>
-                                {off.label}
+                            {offense?.players?.length > 0 ? (
+                                offense.players.map((player, index) => (
+                                    <li key={index}>
+                                        {player.player} - {player.position} ({player.rating})
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="error-message">
+                                    No offensive players found - please check team selection
                                 </li>
-                            ))}
+                            )}
                         </ul>
                     </div>
                 </div>
@@ -178,9 +405,7 @@ function SetupView({ onSwitchView }) {
                     <div className="def-team-header">
                         <div className="opps-name">{getTeamLabel(opps)}</div>
                             <div className="dropdown-button">
-                                <p>selected {defOption}</p>
                                 <select value={defOption} onChange={defOptionsHandler}>
-                                    <option value="">Select Sort</option>
                                     {sortOptions.map((option) => (
                                         <option key={option.value} value={option.value}>
                                             {option.label}
@@ -192,15 +417,19 @@ function SetupView({ onSwitchView }) {
                     <div className='def-team-container'>
                         <ul>
                             <li className="bold-text">
-                                view of selected team with list of active defensive players | 
-                                when API ready add map out of players name, position | 
-                                Opps {opps}
+                                {opps} | {defOption}
                             </li>
-                            {defense.map((def) => (
-                                <li key={def.value}>
-                                {def.label}
+                            {defense?.players?.length > 0 ? (
+                                defense.players.map((player, index) => (
+                                    <li key={index}>
+                                        {player.player} - {player.position} ({player.rating})
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="error-message">
+                                    No defensive players found - please check team selection
                                 </li>
-                            ))}
+                            )}
                         </ul>
                     </div>
                 </div>

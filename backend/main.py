@@ -52,33 +52,64 @@ async def get_aggregate():
         media_type="application/json"
     )
 
-@router.get("/delete-record")
-async def delete_record(): 
+@router.post("/player-by-pr")
+async def delete_record(request: dict): 
+    teamid = request.get("teamid")
+    if not teamid:
+        return JSONResponse(
+            content={"error": "Missing teamid in request body"},
+            status_code=400,
+            media_type="application/json"
+        )
+
     data = await db_delete_record()
     return JSONResponse(
         content=data,
         media_type="application/json"
     )
 
-@router.get("/insert-record")
-async def insert_record():
+@router.post("/players-by-rat")
+async def insert_record(request: dict):
+    teamid = request.get("teamid")
+    if not teamid:
+        return JSONResponse(
+            content={"error": "Missing teamid in request body"},
+            status_code=400,
+            media_type="application/json"
+        )
     data = await db_insert_record()
     return JSONResponse(
         content=data,
         media_type="application/json"
     )
 
-@router.get("/join-tables")
-async def join_tables(): 
-    data = await db_join_tables()
+@router.post("/players-by-pos")
+async def join_tables(request: dict):
+    teamid = request.get("teamid")
+    if not teamid:
+        return JSONResponse(
+            content={"error": "Missing teamid in request body"},
+            status_code=400,
+            media_type="application/json"
+        )
+    
+    data = await db_join_tables(teamid)
     return JSONResponse(
         content=data,
         media_type="application/json"
     )
 
-@router.get("/search-print")
-async def search_print():   
-    data = await db_search_print()
+@router.post("/search-print")
+async def search_print_post(request: dict):
+    teamid = request.get("teamid")
+    if not teamid:
+        return JSONResponse(
+            content={"error": "Missing teamid in request body"},
+            status_code=400,
+            media_type="application/json"
+        )
+    
+    data = await db_search_print(teamid)
     return JSONResponse(
         content=data,
         media_type="application/json"
@@ -128,45 +159,61 @@ async def db_aggregate():
     except Exception as e:
         return {"error": str(e)}
     
-async def db_delete_record():
+async def db_delete_record(teamid):
     try:
         async with httpx.AsyncClient() as client:
             url = f"{db_url}/api/delete-record"
             print("database-url: ", url)
-            response = await client.get(url)
+            response = await client.post(
+                url,
+                json={"teamid": teamid},
+                headers={"Content-Type": "application/json"}
+            )
             print("database-return: ", response.json())
             return response.json()
     except Exception as e:
         return {"error": str(e)}
     
-async def db_insert_record():
+async def db_insert_record(teamid):
     try:
         async with httpx.AsyncClient() as client:
             url = f"{db_url}/api/insert-record"
             print("database-url: ", url)
-            response = await client.get(url)
+            response = await client.post(
+                url,
+                json={"teamid": teamid},
+                headers={"Content-Type": "application/json"}
+            )
             print("database-return: ", response.json())
             return response.json()
     except Exception as e:
         return {"error": str(e)}
     
-async def db_join_tables():
+async def db_join_tables(teamid):
     try:
         async with httpx.AsyncClient() as client:
             url = f"{db_url}/api/join-tables"
             print("database-url: ", url)
-            response = await client.get(url)
+            response = await client.post(
+                url,
+                json={"teamid": teamid},
+                headers={"Content-Type": "application/json"}
+            )
             print("database-return: ", response.json())
             return response.json()
     except Exception as e:
         return {"error": str(e)}
     
-async def db_search_print():   
+async def db_search_print(teamid):   
     try:
         async with httpx.AsyncClient() as client:
             url = f"{db_url}/api/search-print"
             print("database-url: ", url)
-            response = await client.get(url)
+            response = await client.post(
+                url,
+                json={"teamid": teamid},
+                headers={"Content-Type": "application/json"}
+            )
             print("database-return: ", response.json())
             return response.json()
     except Exception as e:
@@ -283,6 +330,10 @@ async def end_game():
     return {"status": "game_ended"}
 
 app.include_router(router)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,3 +1,3 @@
-SELECT player_name, position, rank FROM quarterbackdata WHERE team_name = :team_name
+SELECT team_name, player_name, position, rank FROM quarterbackdata WHERE team_name = %s
 UNION
-SELECT player_name, position, rank FROM rushingreceivingdata WHERE team_name = :team_name;
+SELECT team_name, player_name, position, rank FROM rushingreceivingdata WHERE team_name = %s;
