@@ -5,4 +5,5 @@ SELECT team_name, player_name, position, rank FROM
     UNION
     SELECT team_name, player_name, position, rank FROM rushingreceivingdata WHERE team_name = %s
 ) AS combined_players
+GROUP BY team_name, player_name, position, rank
 ORDER BY rank ASC;
