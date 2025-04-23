@@ -27,6 +27,7 @@ async def read_root():
         media_type="application/json"
     )
 
+# some reason this return 
 @router.get("/test-db")
 async def test_the_db():
     data = await db_test_db()

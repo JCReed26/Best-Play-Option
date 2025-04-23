@@ -28,7 +28,7 @@ connection = psycopg2.connect(url)
 @app.get("/")
 def home(): 
     print("req hello")
-    return "Hello World!"
+    return {"message": "Hello World from Database!"}
 
 @app.get("/api/all-users")
 def get_users():
