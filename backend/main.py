@@ -2,12 +2,8 @@ from fastapi import FastAPI, APIRouter
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
-import json
-import asyncpg
-import os
-from fastapi import Depends, Query, HTTPException
 from simulation.game2_sim import GameSimulation  
-from sql.db import test_db
+import httpx
 
 import logging 
 logger = logging.getLogger(__name__)
@@ -23,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# to the front 
 @router.get("/")
 async def read_root():
     return JSONResponse(
@@ -32,14 +29,51 @@ async def read_root():
 
 @router.get("/test-db")
 async def test_the_db():
+    data = await db_test_db()
     return JSONResponse(
-        content = test_db(),
+        content=data,
+        media_type="application/json"
+    )
+
+@router.get("/all-users")
+async def get_all_users(): 
+    data = await db_all_users()
+    return JSONResponse(
+        content=data,
         media_type="application/json"
     )
 
 
+# to the database 
+db_url = "http://database:5000/"  # Use Docker service name
 
-#Game-View (this works)
+async def db_test_db(): 
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+
+async def db_all_users(): 
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/all-users"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+
+
+
+# specifically Game-View (this works)
 
 from pydantic import BaseModel, Field
 from typing import Optional, List
