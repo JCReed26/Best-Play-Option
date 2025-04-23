@@ -70,7 +70,71 @@ async def db_all_users():
     except Exception as e:
         return {"error": str(e)}
 
-
+async def db_aggregate():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/aggregate"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_delete_record():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/delete-record"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_insert_record():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/insert-record"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_join_tables():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/join-tables"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_search_print():   
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/search-print"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
+    
+async def db_update_record():
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"{db_url}/api/update-record"
+            print("database-url: ", url)
+            response = await client.get(url)
+            print("database-return: ", response.json())
+            return response.json()
+    except Exception as e:
+        return {"error": str(e)}
 
 
 
