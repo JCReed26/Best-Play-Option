@@ -171,7 +171,7 @@ function SetupView({ onSwitchView }) {
 
     //position *******change endpoint
     function fetchOffense_POS(team) {
-        fetch(`http://localhost:8000/search-print`, {
+        fetch(`http://localhost:8000/players-by-pos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -271,7 +271,7 @@ function SetupView({ onSwitchView }) {
 
     //position *****change endpoint
     function fetchDefense_POS(team) {
-        fetch(`http://localhost:8000/search-print`, {
+        fetch(`http://localhost:8000/player-by-pos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -295,7 +295,7 @@ function SetupView({ onSwitchView }) {
 
     //rating ******change endpoint 
     function fetchDefense_RAT(team) {
-        fetch(`http://localhost:8000/search-print`, {
+        fetch(`http://localhost:8000/players-by-rat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

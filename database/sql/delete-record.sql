@@ -1,6 +1,9 @@
--- Sort players by rank and position
-SELECT player_name, position, rank FROM quarterbackdata
-UNION
-SELECT player_name, position, rank FROM rushingreceivingdata
-GROUP BY position, 
-ORDER BY rank;
+-- Group players by position, then sort by rank within each position group
+SELECT team_name, player_name, position, rank FROM 
+(
+    SELECT team_name, player_name, position, rank FROM quarterbackdata WHERE team_name = %s
+    UNION
+    SELECT team_name, player_name, position, rank FROM rushingreceivingdata WHERE team_name = %s
+) AS combined_players
+GROUP BY team_name, player_name, position, rank
+ORDER BY position, rank ASC;
