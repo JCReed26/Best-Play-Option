@@ -21,6 +21,7 @@ class GameSimulation:
         self.running = True
         self.user_input = None
         self.prediction = None
+        self.play_count = 0
 
     async def start_quarter(self):
 

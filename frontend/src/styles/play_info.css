@@ -1,0 +1,154 @@
+/* Modern Play Information Component Styling */
+
+.play-info-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
+  font-family: 'Roboto', 'Arial', sans-serif;
+  overflow: hidden;
+}
+
+/* Scoreboard section */
+.play-info-scoreboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+}
+
+.play-info-team {
+  display: flex;
+  flex-direction: column;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.play-info-team:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.play-info-offense {
+  border-left: 4px solid #4CAF50;
+  background: linear-gradient(135deg, #1a1a1a 0%, #222222 100%);
+}
+
+.play-info-defense {
+  border-left: 4px solid #F44336;
+  background: linear-gradient(135deg, #1a1a1a 0%, #222222 100%);
+}
+
+.play-info-team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.play-info-team-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #aaa;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.play-info-team-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 4px;
+}
+
+.play-info-score {
+  font-size: 1.3rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: #fff;
+  min-width: 40px;
+  text-align: center;
+}
+
+.play-info-offense .play-info-score {
+  background-color: rgba(76, 175, 80, 0.25);
+}
+
+.play-info-defense .play-info-score {
+  background-color: rgba(244, 67, 54, 0.25);
+}
+
+/* Game Information section */
+.play-info-game-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.play-info-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background-color: #222;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.play-info-stat:hover {
+  background-color: #292929;
+}
+
+.play-info-stat-label {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.play-info-stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e0e0e0;
+}
+
+.play-info-clock-value {
+  color: #64B5F6;
+}
+
+.play-info-down-value {
+  color: #FFD54F;
+}
+
+.play-info-yard-value {
+  color: #81C784;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .play-info-game-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .play-info-scoreboard {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .play-info-game-stats {
+    grid-template-columns: 1fr;
+  }
+}

@@ -246,15 +246,20 @@ class GameInput(BaseModel):
     quarter_time: int = 900  # 15*60 seconds
     game_clock: int = 900
     Quarter: int = 1
-    YardLine: int = 70
+    YardLine: int = 25  # Starting at 25-yard line after fair catch
     Down: int = 1
     ToGo: int = 10
     Minute: int = 15
-    Second: int = 59
+    Second: int = 0
     play_data: List[dict] = Field(default_factory=list) # explicit list
     running: bool = True
     user_input: Optional[dict] = None
     prediction: Optional[dict] = None
+    play_count: int = 0
+    score: List[int] = [0, 0]  # [Offense score, Defense score]
+    game_over: bool = False
+    pendingChanges: Optional[dict] = None  # To handle changes from frontend
+    
 
 @router.post("/get-predictions")
 async def get_predictions(input_data: GameInput):
@@ -266,7 +271,7 @@ async def get_predictions(input_data: GameInput):
             print("new-game-starting")
             # create game and set offense and defense
             game_instance = GameSimulation()
-            game_instance.update_state(input_data.dict())
+            game_instance.update_state(input_data.model_dump())
             prediction = game_instance.get_model_predictions()
             print("first pred: ", prediction)
             return JSONResponse(
@@ -285,7 +290,10 @@ async def get_predictions(input_data: GameInput):
                 "play_data": game_instance.play_data,
                 "running": game_instance.running,
                 "user_input": game_instance.user_input,
-                "prediction": prediction
+                "prediction": prediction,
+                "play_count": game_instance.play_count,
+                "score": game_instance.score,
+                "game_over": game_instance.game_over
                 }),
                 status_code=200,
                 media_type="application/json"
@@ -293,7 +301,7 @@ async def get_predictions(input_data: GameInput):
         else:
             # just return game state here 
             print("starting-next-input->prediction")
-            game_instance.next_iteration_handler(input_data.dict())
+            game_instance.next_iteration_handler(input_data.model_dump())
             data = {
                 "OffenseTeam": game_instance.OffenseTeam,
                 "DefenseTeam": game_instance.DefenseTeam,
@@ -309,7 +317,10 @@ async def get_predictions(input_data: GameInput):
                 "play_data": game_instance.play_data,
                 "running": game_instance.running,
                 "user_input": game_instance.user_input,
-                "prediction": game_instance.prediction
+                "prediction": game_instance.prediction,
+                "play_count": game_instance.play_count,
+                "score": game_instance.score,
+                "game_over": game_instance.game_over
             }
             return JSONResponse(
                 content = jsonable_encoder(data), status_code=200, media_type="application/json"
@@ -321,7 +332,6 @@ async def get_predictions(input_data: GameInput):
             content={"error": str(e)},
             media_type="application/json"
         )
-
 
 @app.post("/end-game")
 async def end_game():

@@ -50,14 +50,9 @@
 }
 
 /* Specific styles for the inner containers in the left side */
-.def-play-choice {
-  flex: 0.30; /* Each takes 1/4 of the space (1/2 total) */
-  max-height: 30%; /* Ensure it doesn't exceed 25% of container height */
-}
-
 .game-progression-container {
-  flex: 0.70; /* Takes 1/2 of the space */
-  max-height: 70%; /* Ensure it doesn't exceed 50% of container height */
+  flex: 1; /* Takes full space */
+  height: 100%; /* Full height */
 }
 
 .left-side-container {
@@ -81,8 +76,8 @@
   flex: 0.625; /* 5/8 of the center container */
 }
 
-/* Style for the button to be at the top */
-.game-view-main button {
+/* Style for the switch view button to be at the top */
+.game-view-main > button {
   position: absolute;
   top: 10px; /* Position at the top with a small margin */
   left: 50%;

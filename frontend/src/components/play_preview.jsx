@@ -1,62 +1,80 @@
-// this is where the image of the play with the arrows is displayed 
+// This component displays the currently selected play with detailed information
+import React from 'react';
 import '../styles/play-preview.css';
 
 export default function Play_Preview(props) {
-    const { gameState } = props;
+    const { gameState, selectedPlay } = props;
     
-    // Check if prediction data exists
-    const hasPredictions = gameState && gameState.prediction;
+    // Format game clock for display
+    const formattedGameClock = () => {
+        if (!gameState || typeof gameState.game_clock === 'undefined') return "00:00";
+        const minutes = Math.floor(gameState.game_clock / 60);
+        const seconds = gameState.game_clock % 60;
+        return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+    };
     
+    // Display selected play if available, otherwise show basic game state
     return (
         <div className="play-preview-container">
-            <div>Image of Selected Play from Plays Window</div>
-            <div>Offense: {gameState.OffenseTeam}</div>
-            <div>Defense: {gameState.DefenseTeam}</div>
-            <div>Current Quarter: {gameState.Quarter}</div>
-            <div>Game Clock: {Math.floor(gameState.game_clock / 60)}:{gameState.game_clock % 60 < 10 ? '0' + (gameState.game_clock % 60) : gameState.game_clock % 60}</div>
+            {/* Placeholder for future play diagram/image */}
+            <div className="play-image-placeholder">
+                <h3>Play Diagram</h3>
+                <div className="image-placeholder">
+                    {selectedPlay ? (
+                        <div className="selected-play-name">{selectedPlay.choice}</div>
+                    ) : (
+                        <div>No play selected</div>
+                    )}
+                </div>
+            </div>
             
-            {hasPredictions ? (
-                <div className="predictions-container">
-                    <h3>Predictions</h3>
+            <div className="game-situation">
+                <div>Offense: {gameState.OffenseTeam}</div>
+                <div>Defense: {gameState.DefenseTeam}</div>
+                <div>Quarter: {gameState.Quarter} | Time: {formattedGameClock()}</div>
+                <div>Down: {gameState.Down} | Distance: {gameState.ToGo} | Yard Line: {gameState.YardLine}</div>
+            </div>
+            
+            {selectedPlay ? (
+                <div className="selected-play-details">
+                    <h3>Selected Play</h3>
                     
-                    <div className="prediction-section">
-                        <h4>Formation Predictions</h4>
-                        <ul>
-                            {gameState.prediction.formation_predictions.map((pred, index) => (
-                                <li key={`formation-${index}`}>
-                                    {pred.label}: {(pred.confidence * 100).toFixed(2)}%
-                                </li>
-                            ))}
-                        </ul>
+                    <div className="play-detail-item">
+                        <span className="detail-label">Play Choice:</span>
+                        <span className="detail-value">{selectedPlay.choice}</span>
+                        <span className="detail-confidence">
+                            Confidence: {(selectedPlay.choiceConfidence * 100).toFixed(1)}%
+                        </span>
                     </div>
                     
-                    <div className="prediction-section">
-                        <h4>Play Type Predictions</h4>
-                        <ul>
-                            {gameState.prediction.playtype_predictions.map((pred, index) => (
-                                <li key={`playtype-${index}`}>
-                                    {pred.label}: {(pred.confidence * 100).toFixed(2)}%
-                                </li>
-                            ))}
-                        </ul>
+                    <div className="play-detail-item">
+                        <span className="detail-label">Formation:</span>
+                        <span className="detail-value">{selectedPlay.formation}</span>
+                        <span className="detail-confidence">
+                            Confidence: {(selectedPlay.formationConfidence * 100).toFixed(1)}%
+                        </span>
                     </div>
                     
-                    <div className="prediction-section">
-                        <h4>Play Choice Predictions</h4>
-                        <ul>
-                            {gameState.prediction.choice_predictions.map((pred, index) => (
-                                <li key={`choice-${index}`}>
-                                    {pred.label}: {(pred.confidence * 100).toFixed(2)}%
-                                </li>
-                            ))}
-                        </ul>
+                    <div className="play-detail-item">
+                        <span className="detail-label">Play Type:</span>
+                        <span className="detail-value">{selectedPlay.playType}</span>
+                        <span className="detail-confidence">
+                            Confidence: {(selectedPlay.playTypeConfidence * 100).toFixed(1)}%
+                        </span>
                     </div>
                 </div>
             ) : (
-                <div>No predictions available</div>
+                <div className="no-play-selected">
+                    <p>Select a play from the Plays Window to view details</p>
+                    {gameState && gameState.prediction ? (
+                        <p className="prediction-hint">
+                            {gameState.prediction.choice_predictions?.length || 0} play options available
+                        </p>
+                    ) : (
+                        <p className="prediction-hint">No predictions available yet</p>
+                    )}
+                </div>
             )}
-            
-            <div>QUESTION: where we getting the play pictures</div>
         </div>
     );
 }

@@ -1,6 +1,8 @@
 // defensive formation selection box component 
 
 export default function Def_Formation(props) {
+    const { gameState } = props;
+    
     return (
        <div>
         <div>Def Formation Selection Boxes</div>
